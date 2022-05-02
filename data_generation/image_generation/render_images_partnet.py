@@ -1,7 +1,9 @@
 from __future__ import print_function
 import math, sys, random, argparse, json, os, tempfile
+import pathlib
 from datetime import datetime as dt
 from collections import Counter
+sys.path.append('.')
 from add_parts import *
 from PIL import Image
 
@@ -287,8 +289,8 @@ def render_scene(args,
   mat.use_nodes = True
 
   walls = ["wall1.png", "wall2.jpg", "wall3.jpg", "wall4.jpg"]
-
-  image_path = os.path.join("materials", random.choice(walls))
+  path = pathlib.Path.cwd()
+  image_path = str(path / "materials" / random.choice(walls))
 
   nt = mat.node_tree
   nodes = nt.nodes
@@ -323,8 +325,8 @@ def render_scene(args,
   mat2.use_nodes = True
 
   floors = ["floor1.jpg", "floor2.png", "floor3.jpg", "floor4.jpg"]
-
-  image_path = os.path.join("materials", random.choice(floors))
+  path = pathlib.Path.cwd()
+  image_path = str(path / "materials" / random.choice(floors))
 
   nt = mat2.node_tree
   nodes = nt.nodes
@@ -616,7 +618,8 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
         add_mesh (obj_name2, part_v, part_f, args.tmp_dir, color=rgba)
 
     # Actually add the object to the scene
-    utils.add_object(obj_name2, (x, y), args.tmp_dir, theta=theta)
+    render_dir = str(pathlib.Path(__file__).parent / args.tmp_dir)
+    utils.add_object(obj_name2, (x, y), render_dir, theta=theta)
 
     import copy
     part_color_occluded = part_color_final.copy()
