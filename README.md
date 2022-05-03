@@ -1,93 +1,56 @@
-# PTR: A Benchmark for Part-based Conceptual, Relational, and Physical Reasoning
+# Install Blender
 
-![Dataset Overview](http://ptr.csail.mit.edu/assets/teaser.png)
+Go to [this](https://download.blender.org/release/Blender2.79/) webpage and download blender-2.79b-windows64.zip for windows.
 
-**Figure 1. Dataset Overview.**
+> **NOTE**: It is important that you download the version 2.79**b** and not 2.79 or 2.79a.
 
-## Introduction
+Unzip the `.zip` in any location you want. Check if blender works by simply double-clicking the `blender.exe` within the unzipped folder.
 
-A critical aspect of human visual perception is the ability to parse visual scenes into individual objects and further into object parts, forming part-whole hierarchies. Such composite structures could induce a rich set of semantic concepts and relations, thus playing an important role in the interpretation and organization of visual signals as well as for the generalization of visual perception and reasoning. However, existing visual reasoning benchmarks mostly focus on objects rather than parts. Visual reasoning based on the full part-whole hierarchy is much more challenging than object-centric reasoning due to finer-grained concepts, richer geometry relations, and more complex physics. Therefore, to better serve for part-based conceptual, relational and physical reasoning, we introduce a new large-scale diagnostic visual reasoning dataset named PTR. PTR contains around 70k RGBD synthetic images with ground truth object and part level annotations regarding semantic instance segmentation, color attributes, spatial and geometric relationships, and certain physical properties such as stability. These images are paired with 700k machine-generated questions covering various types of reasoning types, making them a good testbed for visual reasoning models. We examine several state-of-the-art visual reasoning models on this dataset and observe that they still make many surprising mistakes in situations where humans can easily infer the correct answer. We believe this dataset will open up new opportunities for part-based reasoning.
+## Install pip
 
-PTR is accepted by NeurIPS 2021.
+Blender 2.79x does come with a Python 3.5 interpreter which will invoke the scripts that are used in this project. One of the pitfalls is that the interpreter does not come with `pip` which makes installing third party libraries impossible.
 
-Authors: [Yining Hong](https://evelinehong.github.io/), [Li Yi](https://cs.stanford.edu/~ericyi/), [Joshua B Tenenbaum](http://web.mit.edu/cocosci/josh.html), [Antonio Torralba](http://web.mit.edu/cocosci/josh.html) and [Chuang Gan](https://people.csail.mit.edu/ganchuang/) from UCLA, MIT, IBM, Stanford and Tsinghua.
+To install `pip` navigate to the unzipped folder under `..blender-2.79b-windows64\2.79\python\bin` in your terminal. After that execute the `python.exe` that you find in that directory and pass the `get-pip.py` script, that you can find in this project root directory by typing:
 
-Arxiv Version: https://arxiv.org/abs/2112.05136
-
-Project Page: http://ptr.csail.mit.edu/
-
-## Download
-Data and evaluation server can be found [here](http://ptr.csail.mit.edu/)
-
-## TODOs
-baseline models will be available soon!
-
-## About the Data
-The data includes train/val/test images / questions / scene annotations / depths. 
-Note that due to data cleaning process, the indices of the images are not necessarily consecutive.
-
-The scene annotation is a json file that contains the following keys:
-```
-    cam_location        #location of the camera
-    cam_rotation        #rotation of the camera
-    directions          #Based on the camera, the vectors of the directions
-    image_filename      #the filename of the image
-    image_index         #the index of the image
-    objects             #the objects in the scene, which contains a list of objects
-        3d_coords       #the location of the object
-        category        #the object category
-        line_geo        #a dictionary containing (part, line unit normal vector) pairs. See the [unit normal vector](https://sites.math.washington.edu/~king/coursedir/m445w04/notes/vector/normals-plane.html) of a line. If the vector is not a unit vector, then the part cannot be considered a line.
-        plane_geo       #a dictionary containing (part, plane unit normal vector) pairs. See the [unit normal vector](https://sites.math.washington.edu/~king/coursedir/m445w04/notes/vector/normals-plane.html) of a plane. If the vector is not a unit vector, then the part cannot be considered a line.
-        obj_mask        #the mask of the object
-        part_color      #a dictionary containing the colors of the parts
-        part_count      #a dictionary containing the number of the parts
-        part_mask       #a dictionary containing the masks of the parts
-        partnet_id      #the id of the original partnet object in the PartNet dataset
-        pixel_coords    #the pixel of the object
-    relationships       #according to the directions, the spatial relationships of the objects
-    projection_matrix   #the projection matrix of the camera to reconstruct 3D scene using depths
-    physics(optional)   #if physics in the keys and the key is True, this is a physical scene.
+```shell
+./python.exe /path/to/get-pip.py
 ```
 
-The question file is a json file which contains a list of questions. Each question has the following keys:
-```
-    image_filename      #the image file that the question asks about
-    image_index         #the image index that the question asks about
-    program             #the original program used to generate the question
-    program_nsclseq     #rearranged program as described in the paper
-    question            #the question text
-    answer              #the answer text
-    type1               #the five questions types
-    type2               #the 14 subtypes described in Table 2 in the paper
+> **NOTE**: if you use powershell or cmd you need to adjust the path to windows paths, i.e. path\to\get-pip.py.
+> Furthermore it is possible that you need to omit the `./` infront of `python.exe`
+
+## Install dependencies
+
+After successfull installation of `pip` you can install `pillow` which is required by [render_images_partnet.py](data_generation/image_generation/render_images_partnet.py) by typing
+
+> **NOTE**: you need to be located in the same directory as in the previous example where we installed pip!
+
+```shell
+./python.exe -m pip install pillow
 ```
 
-## Data Generation Engine
-The images and scene annotations can be generated via invoking data_generation/image_generation/render_images_partnet.py
-```
-blender --background --python render_images_partnet.py -- [args]
+## Add blender to path
+
+To make the `blender` command available in your system you need to add the unzipped folder path (up until you can see the `blender.exe`) to your system path (environment variable). 
+
+# Download Datasets
+
+To make the project run you need to download [Partnet Dataset](https://shapenet.org/login/) (you need an account) and [Partnet Mobility Dataset](https://sapien.ucsd.edu/browse) (you need an account too). 
+
+> **NOTE**: The first data set is quite large, i.e. the zip to download is around `100 GB` and the unzipped data set is around `322 GB`. The second data set is *only* `~10 GB`.
+
+Unzip both dataset in any location that is convenient.
+
+# Run render_images_partnet.py
+
+To run [render_images_partnet.py](data_generation/image_generation/render_images_partnet.py) you need to navigate to the location of the script first.
+
+> **NOTE**: I have adjusted some paths and it should work from anywhere, but to be completely sure navigation to the `image_generation` folder is advised.
+
+To generate images use the following command:
+
+```shell
+blender --python render_images_partnet.py --background -- --data_dir /path/to/unzipped/partnet --mobility_dir /path/to/unzipped/partnet/mobility --use_gpu 1
 ```
 
-To generate physical scenes, invoke data_generation/image_generation/render_images_physics.py
-```
-blender --background --python render_images_physics.py -- [args]
-```
-
-**For more instructions on image generation, please go to [this directory](https://github.com/evelinehong/PTR/tree/main/data_generation/image_generation) and see the [README file](https://github.com/evelinehong/PTR/tree/main/data_generation/image_generation/README.md)**
-
-To generate questions and answers based on the images, please go to [this directory](https://github.com/evelinehong/PTR/tree/main/data_generation/question_generation), and run
-```
-python generate_questions.py --input_scene_dir $INPUT_SCENE_DIR --output_dir $OUTPUT_QUESTION_DIR --output_questions_file $OUTPUT_FILE
-```
-
-The data generation engine is based partly on the [CLEVR generation engine](https://github.com/facebookresearch/clevr-dataset-gen).
-
-## Errata
-We have manually examined the images, annotations and questions twice. However, provided that there are annotation errors of the PartNet dataset we used, there could still be some errors in the scene annotations. **If you find any errors that make the questions unanswerable, please contact yninghong@gmail.com**. 
-
-## Citations
-    @inproceedings{hong2021ptr,
-    author = {Hong, Yining and Yi, Li and Tenenbaum, Joshua B and Torralba, Antonio and Gan, Chuang},
-    title = {PTR: A Benchmark for Part-based Conceptual, Relational, and Physical Reasoning},
-    booktitle = {Advances In Neural Information Processing Systems},
-    year = {2021}
-    }
+The last flag `--use_gpu 1` enables blender to run on your gpu. This only works if you have a NVIDIA Gpu and CUDA installed. Otherwise you can use `--use_gpu 0` or omit the flag.
