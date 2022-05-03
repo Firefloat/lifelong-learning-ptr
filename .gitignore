@@ -1,7 +1,6 @@
 # Blender stuff
 tmp*/
-**/data_generation/output/images
-**/data_generation/output/scenes
+*.png
 *.json
 
 # Byte-compiled / optimized / DLL files
