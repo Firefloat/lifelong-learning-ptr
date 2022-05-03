@@ -1,6 +1,7 @@
 from __future__ import print_function
 import math, sys, random, argparse, json, os, tempfile
 import pathlib
+import shutil
 from datetime import datetime as dt
 from collections import Counter
 sys.path.append('.')
@@ -18,6 +19,11 @@ if INSIDE_BLENDER:
   from mathutils import Matrix
   import utils
 
+
+THIS_DIR = pathlib.Path(__file__).parent
+OUTPUT_DIR = THIS_DIR.parent / 'output'
+
+
 parser = argparse.ArgumentParser()
 
 # Input options
@@ -25,7 +31,7 @@ parser.add_argument('--base_scene_blendfile', default='data/base_scene.blend',
     help="Base blender file on which all scenes are based; includes " +
           "ground plane, lights, and camera.")
 parser.add_argument('--properties_json', default='data/properties_partnet.json')
-parser.add_argument('--tmp_dir', default='./tmp9/')
+parser.add_argument('--tmp_dir', default=str(THIS_DIR / 'tmp9'))
 parser.add_argument('--material_dir', default='data/materials',
     help="Directory where .blend files for materials are stored")
 
@@ -65,18 +71,28 @@ parser.add_argument('--split', default='new',
     help="Name of the split for which we are rendering. This will be added to " +
          "the names of rendered images, and will also be stored in the JSON " +
          "scene structure for each image.")
-parser.add_argument('--output_image_dir', default='../output/images/',
+parser.add_argument(
+    '--output_image_dir',
+    default=str(OUTPUT_DIR / 'images'),
     help="The directory where output images will be stored. It will be " +
          "created if it does not exist.")
-parser.add_argument('--output_scene_dir', default='../output/scenes/',
+parser.add_argument(
+    '--output_scene_dir',
+    default=str(OUTPUT_DIR / 'scenes'),
     help="The directory where output JSON scene structures will be stored. " +
          "It will be created if it does not exist.")
-parser.add_argument('--output_depth_dir', default='../output/depths/',
+parser.add_argument(
+    '--output_depth_dir',
+    default=str(OUTPUT_DIR / 'depths'),
     help="The directory where output JSON scene structures will be stored. " +
          "It will be created if it does not exist.")
-parser.add_argument('--output_scene_file', default='../output/ptr_scenes.json',
+parser.add_argument(
+    '--output_scene_file',
+    default=str(OUTPUT_DIR / 'ptr_scenes.json'),
     help="Path to write a single JSON file containing all scene information")
-parser.add_argument('--output_blend_dir', default='../output/blendfiles',
+parser.add_argument(
+    '--output_blend_dir',
+    default=str(OUTPUT_DIR / 'blendfiles'),
     help="The directory where blender scene files will be stored, if the " +
          "user requested that these files be saved using the " +
          "--save_blendfiles flag; in this case it will be created if it does " +
@@ -125,10 +141,16 @@ parser.add_argument('--render_tile_size', default=256, type=int,
          "rendering may achieve better performance using smaller tile sizes " +
          "while larger tile sizes may be optimal for GPU-based rendering.")
 
-parser.add_argument('--data_dir', default='./data_v0', type=str)
-parser.add_argument('--mobility_dir', default='./cart', type=str)
+parser.add_argument('--data_dir', default=str(THIS_DIR / 'data_v0'), type=str)
+parser.add_argument('--mobility_dir', default=str(THIS_DIR / 'cart'), type=str)
 
 def main(args):
+  tmp_dir = pathlib.Path(args.tmp_dir)
+
+  if tmp_dir.exists():
+      # To make sure the temp-dir is empty, otherwise script will break
+      shutil.rmtree(str(tmp_dir))
+
   num_digits = 6
   prefix = '%s_%s_' % (args.filename_prefix, args.split)
   img_template = '%s%%0%dd.png' % (prefix, num_digits)
@@ -618,8 +640,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
         add_mesh (obj_name2, part_v, part_f, args.tmp_dir, color=rgba)
 
     # Actually add the object to the scene
-    render_dir = str(pathlib.Path(__file__).parent / args.tmp_dir)
-    utils.add_object(obj_name2, (x, y), render_dir, theta=theta)
+    utils.add_object(obj_name2, (x, y), args.tmp_dir, theta=theta)
 
     import copy
     part_color_occluded = part_color_final.copy()
