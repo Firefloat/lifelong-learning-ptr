@@ -2,6 +2,7 @@ from __future__ import print_function
 import math, sys, random, argparse, json, os, tempfile
 from datetime import datetime as dt
 from collections import Counter
+sys.path.append('.')
 from add_parts import *
 import pybullet as p
 from PIL import Image
