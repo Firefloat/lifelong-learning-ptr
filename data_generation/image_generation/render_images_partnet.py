@@ -552,7 +552,8 @@ def render_scene(args,
   output_node2 = bpy.context.scene.node_tree.nodes.new('CompositorNodeOutputFile')
   output_node2.base_path = args.output_depth_dir
   output_node2.format.file_format = 'OPEN_EXR'
-  output_node2.file_slots[0].path = output_image.split("/")[-1]
+  output_node2.file_slots[0].path = pathlib.Path(output_image).name
+
   # link5 = bpy.context.scene.node_tree.links.new(render_node.outputs[2], range_node.inputs[0])
   link6 = bpy.context.scene.node_tree.links.new(render_node.outputs[2], output_node2.inputs[0])
   bpy.ops.render.render(write_still=True)
