@@ -1,9 +1,11 @@
 from __future__ import print_function
 import math, sys, random, argparse, json, os, tempfile
+from msilib.schema import Patch
 from datetime import datetime as dt
 from collections import Counter
 sys.path.append('.')
 from add_parts import *
+import pathlib
 import pybullet as p
 from PIL import Image
 """
@@ -17,6 +19,9 @@ This file expects to be run from Blender like this:
 
 blender --background --python render_images.py -- [arguments to this script]
 """
+
+THIS_DIR = pathlib.Path(__file__).parent
+OUTPUT_DIR = THIS_DIR.parent / 'output'
 
 INSIDE_BLENDER = True
 try:
@@ -42,8 +47,8 @@ parser.add_argument('--properties_json', default='data/properties_partnet.json',
          "rescale object models; the \"materials\" and \"shapes\" fields map " +
          "from CLEVR material and shape names to .blend files in the " +
          "--object_material_dir and --shape_dir directories respectively.")
-parser.add_argument('--tmp_dir', default='./tmp9')
-parser.add_argument('--material_dir', default='data/materials',
+parser.add_argument('--tmp_dir', default=str(THIS_DIR / 'tmp9'))
+parser.add_argument('--material_dir', default=str(THIS_DIR / 'materials'),
     help="Directory where .blend files for materials are stored")
 
 
@@ -83,18 +88,18 @@ parser.add_argument('--split', default='new',
     help="Name of the split for which we are rendering. This will be added to " +
          "the names of rendered images, and will also be stored in the JSON " +
          "scene structure for each image.")
-parser.add_argument('--output_image_dir', default='../output/images_physics/',
+parser.add_argument('--output_image_dir', default=str(OUTPUT_DIR / 'images_physics/'),
     help="The directory where output images will be stored. It will be " +
          "created if it does not exist.")
-parser.add_argument('--output_scene_dir', default='../output/scenes_physics/',
+parser.add_argument('--output_scene_dir', default=str(OUTPUT_DIR / 'scenes_physics/'),
     help="The directory where output JSON scene structures will be stored. " +
          "It will be created if it does not exist.")
-parser.add_argument('--output_depth_dir', default='../output/depths_physics/',
+parser.add_argument('--output_depth_dir', default=str(OUTPUT_DIR / 'depths_physics/'),
     help="The directory where output JSON scene structures will be stored. " +
          "It will be created if it does not exist.")
-parser.add_argument('--output_scene_file', default='../output/partnet_scenes.json',
+parser.add_argument('--output_scene_file', default=str(OUTPUT_DIR / 'partnet_scenes.json'),
     help="Path to write a single JSON file containing all scene information")
-parser.add_argument('--output_blend_dir', default='output/blendfiles',
+parser.add_argument('--output_blend_dir', default=str(OUTPUT_DIR / 'blendfiles'),
     help="The directory where blender scene files will be stored, if the " +
          "user requested that these files be saved using the " +
          "--save_blendfiles flag; in this case it will be created if it does " +
@@ -219,8 +224,7 @@ def render_scene(args,
     output_blendfile=None,
     split='train'
   ):
-
-  os.mkdir("%s_urdf"%args.tmp_dir)
+  pathlib.Path("%s_urdf"%args.tmp_dir).mkdir(exist_ok=True)
 
   # Load the main blendfile
   base_scene_blendfiles = ['data/base_scene_physics.blend']
@@ -297,8 +301,8 @@ def render_scene(args,
   mat.use_nodes = True
 
   walls = ["wall1.png", "wall2.jpg", "wall3.jpg", "wall4.jpg"]
-
-  image_path = os.path.join("materials", random.choice(walls))
+  path = pathlib.Path.cwd()
+  image_path = str(path / "materials" / random.choice(walls))
 
   nt = mat.node_tree
   nodes = nt.nodes
@@ -326,7 +330,8 @@ def render_scene(args,
 
   floors = ["floor1.jpg", "floor2.png", "floor3.jpg", "floor4.jpg"]
 
-  image_path = os.path.join("materials", random.choice(floors))
+  path = pathlib.Path.cwd()
+  image_path = str(path / "materials" / random.choice(floors))
 
   nt = mat2.node_tree
   nodes = nt.nodes
