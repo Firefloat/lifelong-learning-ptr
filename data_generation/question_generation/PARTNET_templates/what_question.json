@@ -1,0 +1,29 @@
+[
+    {
+        "text": [
+            "What object can you see in the picture?"
+        ],
+        "nodes": [
+            {
+                "inputs": [
+                ],
+                "type": "what_question"
+            }
+        ],
+        "params": [
+            {
+                "type": "Object-Category",
+                "name": "<S3>"
+            }
+        ],
+        "constraints": [
+            {
+                "params": [
+                    1,
+                    6
+                ],
+                "type": "WHAT_QUESTION"
+            }
+        ]
+    }
+]

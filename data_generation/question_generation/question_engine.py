@@ -574,6 +574,12 @@ def minus_less_handler(scene_struct, inputs, side_inputs):
   if inputs[0] > inputs[1]: return '__INVALID__'
   return inputs[1] - inputs[0]
 
+
+def what_question_handler(scene_struct, inputs, side_inputs):
+  cat = scene_struct['objects'][0]['category']
+  return cat
+
+
 execute_handlers = {
   'scene': scene_handler,
   #filter
@@ -642,6 +648,7 @@ execute_handlers = {
   'query_positional-analogy-exist': query_position_analogy_handler('query_positional-analogy-exist'),
   'perpendicular': geometry_handler('perpendicular'),
   'parallel': geometry_handler('parallel'),
+  'what_question': what_question_handler,
 }
 
 

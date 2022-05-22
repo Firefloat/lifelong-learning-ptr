@@ -403,6 +403,14 @@
       "template_only": true
     },
     {
+      "name": "what_question",
+      "inputs": ["ObjectSet"],
+      "side_inputs": ["Object-Category"],
+      "output": "Object-Category",
+      "terminal": false,
+      "template_only": true
+    },
+    {
       "name": "filter_object_count",
       "inputs": ["ObjectSet"],
       "side_inputs": ["Object-Category", "PartSet"],
