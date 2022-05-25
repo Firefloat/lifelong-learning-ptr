@@ -767,3 +767,12 @@ def is_degenerate(question, metadata, scene_struct, answer=None, verbose=False):
 
   return False
 
+def getTemplateTypes(args):
+  if args.template_types == '*':
+    template_types_list = os.listdir(args.template_dir)
+  else:
+    template_types_list = args.template_types.replace(' ', '')
+    template_types_list = args.template_types.split(',')
+    template_types_list = [s + '.json' for s in template_types_list]
+  return template_types_list
+

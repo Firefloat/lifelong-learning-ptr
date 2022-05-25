@@ -44,6 +44,10 @@ parser.add_argument('--templates_per_image', default=10, type=int,
 parser.add_argument('--instances_per_template', default=1, type=int,
                     help="The number of times each template should be instantiated on an image")
 
+#Control what kind type of templates to use
+parser.add_argument('--template_types', default='*',
+                   help='The types of templates to be used as a comma-separated list. * means use all')
+
 # Misc
 parser.add_argument('--reset_counts_every', default=6000, type=int,
                     help="How often to reset template and answer counts. Higher values will " +
@@ -804,6 +808,9 @@ def replace_optionals(s):
 
 
 def main(args):
+  if not os.path.isdir(args.output_dir):
+    os.makedirs(args.output_dir)
+
   with open(args.metadata_file, 'r') as f:
     metadata = json.load(f)
     dataset = metadata['dataset']
@@ -817,7 +824,8 @@ def main(args):
   # Key is (filename, file_idx)
   num_loaded_templates = 0
   templates = {}
-  for fn in os.listdir(args.template_dir):
+  template_types_list = qeng.getTemplateTypes(args)
+  for fn in template_types_list:
     if not fn.endswith('.json'): continue
     with open(os.path.join(args.template_dir, fn), 'r') as f:
       base = os.path.splitext(fn)[0]
