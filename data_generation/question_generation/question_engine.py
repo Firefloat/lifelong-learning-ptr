@@ -579,6 +579,10 @@ def what_question_handler(scene_struct, inputs, side_inputs):
   cat = scene_struct['objects'][0]['category']
   return cat
 
+#TODO
+def single_question_handler(scene_struct, inputs, side_inputs):
+  return ""
+
 
 execute_handlers = {
   'scene': scene_handler,
@@ -649,6 +653,7 @@ execute_handlers = {
   'perpendicular': geometry_handler('perpendicular'),
   'parallel': geometry_handler('parallel'),
   'what_question': what_question_handler,
+  'single_question': single_question_handler
 }
 
 

@@ -1,7 +1,7 @@
 [
   {
     "text": [
-      "How many <S>s with <CT> <CL> <P> are there?"
+      "does the <S> have any <P>?"
     ],
     "nodes": [
       {
@@ -11,14 +11,12 @@
       {
         "side_inputs": [
           "<S>",
-          "<P>",
-          "<CT>",
-          "<CL>"
+          "<P>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_object_count"
+        "type": "filter_object_exist"
       }
     ],
     "params": [
@@ -27,23 +25,22 @@
         "name": "<S>"
       },
       {
-        "type": "Part-Count",
-        "name": "<CT>"
-      },
-      {
-        "type": "Color",
-        "name": "<CL>"
-      },
-      {
         "type": "Part-Category",
         "name": "<P>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          1
+        ],
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
   },
   {
     "text": [
-      "Are there any <S>s with <CT> <CL> <P>?"
+      "does the <S> have <CT> <P>?"
     ],
     "nodes": [
       {
@@ -54,8 +51,7 @@
         "side_inputs": [
           "<S>",
           "<P>",
-          "<CT>",
-          "<CL>"
+          "<CT>"
         ],
         "inputs": [
           0
@@ -73,19 +69,22 @@
         "name": "<CT>"
       },
       {
-        "type": "Color",
-        "name": "<CL>"
-      },
-      {
         "type": "Part-Category",
         "name": "<P>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          1
+        ],
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
   },
   {
     "text": [
-      "What is the category of the <S> with <CT> <CL> <P>?"
+      "does the <S> have <CL> <P>?"
     ],
     "nodes": [
       {
@@ -96,29 +95,18 @@
         "side_inputs": [
           "<S>",
           "<P>",
-          "<CT>",
           "<CL>"
         ],
         "inputs": [
           0
         ],
-        "type": "filter_object_unique"
-      },
-      {
-        "inputs": [
-          1
-        ],
-        "type": "query_object-category"
+        "type": "filter_object_exist"
       }
     ],
     "params": [
       {
         "type": "Object-Category",
         "name": "<S>"
-      },
-      {
-        "type": "Part-Count",
-        "name": "<CT>"
       },
       {
         "type": "Color",
@@ -132,15 +120,15 @@
     "constraints": [
       {
         "params": [
-          "<S>"
+          1
         ],
-        "type": "NULL"
+        "type": "OBJ_COUNT_GT"
       }
     ]
   },
   {
     "text": [
-      "What is the color of the <P2> of the <S1> with <CT1> <CL1> <P1>?"
+      "What Color is/are the <S>'s <P>?"
     ],
     "nodes": [
       {
@@ -149,10 +137,7 @@
       },
       {
         "side_inputs": [
-          "<S1>",
-          "<P1>",
-          "<CT1>",
-          "<CL1>"
+          "<S>"
         ],
         "inputs": [
           0
@@ -164,7 +149,7 @@
           1
         ],
         "side_inputs": [
-          "<P2>"
+          "<P>"
         ],
         "type": "query_part-color"
       }
@@ -172,30 +157,25 @@
     "params": [
       {
         "type": "Object-Category",
-        "name": "<S1>"
-      },
-      {
-        "type": "Part-Count",
-        "name": "<CT1>"
-      },
-      {
-        "type": "Color",
-        "name": "<CL1>"
+        "name": "<S>"
       },
       {
         "type": "Part-Category",
-        "name": "<P1>"
-      },
-      {
-        "type": "Part-Category",
-        "name": "<P2>"
+        "name": "<P>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          1
+        ],
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
   },
   {
     "text": [
-      "How many <P2>s does the <S1> with <CT1> <CL1> <P1> have?"
+      "How many <P>s does the <S> have?"
     ],
     "nodes": [
       {
@@ -204,10 +184,8 @@
       },
       {
         "side_inputs": [
-          "<S1>",
-          "<P1>",
-          "<CT1>",
-          "<CL1>"
+          "<P>",
+          "<S>"
         ],
         "inputs": [
           0
@@ -219,7 +197,7 @@
           1
         ],
         "side_inputs": [
-          "<P2>"
+          "<P>"
         ],
         "type": "query_part-count"
       }
@@ -227,30 +205,18 @@
     "params": [
       {
         "type": "Object-Category",
-        "name": "<S1>"
-      },
-      {
-        "type": "Part-Count",
-        "name": "<CT1>"
-      },
-      {
-        "type": "Color",
-        "name": "<CL1>"
+        "name": "<S>"
       },
       {
         "type": "Part-Category",
-        "name": "<P1>"
-      },
-      {
-        "type": "Part-Category",
-        "name": "<P2>"
+        "name": "<P>"
       }
     ],
     "constraints": []
   },
   {
     "text": [
-      "What is the category of the <CL2> part of the <S> with <CT> <CL> <P>?"
+      "What is the category of the <CL> part of the <S>?"
     ],
     "nodes": [
       {
@@ -260,8 +226,6 @@
       {
         "side_inputs": [
           "<S>",
-          "<P>",
-          "<CT>",
           "<CL>"
         ],
         "inputs": [
@@ -271,7 +235,7 @@
       },
       {
         "side_inputs": [
-          "<CL2>"
+          "<CL>"
         ],
         "inputs": [
           1
@@ -285,22 +249,17 @@
         "name": "<S>"
       },
       {
-        "type": "Part-Count",
-        "name": "<CT>"
-      },
-      {
         "type": "Color",
         "name": "<CL>"
-      },
-      {
-        "type": "Part-Category",
-        "name": "<P>"
-      },
-      {
-        "type": "Color",
-        "name": "<CL2>"
       }
     ],
-    "constraints": []
+    "constraints": [
+      {
+        "params": [
+          1
+        ],
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
   }
 ]
