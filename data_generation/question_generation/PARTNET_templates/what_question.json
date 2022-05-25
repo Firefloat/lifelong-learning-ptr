@@ -19,10 +19,9 @@
         "constraints": [
             {
                 "params": [
-                    1,
-                    6
+                    1
                 ],
-                "type": "WHAT_QUESTION"
+                "type": "OBJ_COUNT_GT"
             }
         ]
     }

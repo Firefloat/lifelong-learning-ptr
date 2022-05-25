@@ -1,0 +1,7 @@
+<S>: Object-Category
+<P>: Part-Category
+<CT>: Part-Count
+<CL>: Color
+<CLG>: Color
+<R>: Relation
+<D>: Direction
