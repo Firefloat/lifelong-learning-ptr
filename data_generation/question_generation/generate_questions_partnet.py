@@ -975,26 +975,31 @@ def main(args):
         break
 
     with open(os.path.join(args.output_dir, question_fn), 'w') as f:
-      print('Writing output to %s' % question_fn)
+      filepath = args.output_dir+question_fn
+      print('Writing output to %s' % filepath)
       json.dump({
         # 'info': scene_info,
         'questions': scene_questions,
       }, f)
 
-  for q in questions:
-    for f in q['program']:
-      if 'side_inputs' in f:
-        f['value_inputs'] = f['side_inputs']
-        del f['side_inputs']
-      else:
-        f['value_inputs'] = []
 
-  with open(args.output_questions_file, 'w') as f:
-    print('Writing output to %s' % args.output_questions_file)
-    json.dump({
-      # 'info': scene_info,
-      'questions': questions,
-    }, f)
+# Code below might not be necessary, why change the name of side_inputs to value_inputs
+# and write the file again in current working directory?
+
+#  for q in questions:
+#    for f in q['program']:
+#      if 'side_inputs' in f:
+#        f['value_inputs'] = f['side_inputs']
+#        del f['side_inputs']
+#      else:
+#        f['value_inputs'] = []
+
+#  with open(args.output_questions_file, 'w') as f:
+#    print('Writing output to %s' % args.output_questions_file)
+#    json.dump({
+#      # 'info': scene_info,
+#      'questions': questions,
+#    }, f)
 
 
 if __name__ == '__main__':

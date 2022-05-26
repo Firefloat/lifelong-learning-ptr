@@ -84,7 +84,7 @@
   },
   {
     "text": [
-      "does the <S> have <CL> <P>?"
+      "does the <S> have <CT> <CL> <P>?"
     ],
     "nodes": [
       {
@@ -95,6 +95,7 @@
         "side_inputs": [
           "<S>",
           "<P>",
+          "<CT>",
           "<CL>"
         ],
         "inputs": [
@@ -107,6 +108,10 @@
       {
         "type": "Object-Category",
         "name": "<S>"
+      },
+      {
+        "type": "Part-Count",
+        "name": "<CT>"
       },
       {
         "type": "Color",
@@ -225,8 +230,7 @@
       },
       {
         "side_inputs": [
-          "<S>",
-          "<CL>"
+          "<S>"
         ],
         "inputs": [
           0
