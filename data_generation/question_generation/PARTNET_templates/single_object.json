@@ -35,6 +35,18 @@
           1
         ],
         "type": "OBJ_COUNT_GT"
+      },
+      {
+        "params": [
+          "<S>"
+        ],
+        "type": "NOT_NULL"
+      },
+      {
+        "params": [
+          "<P>"
+        ],
+        "type": "NOT_NULL"
       }
     ]
   },
@@ -79,6 +91,18 @@
           1
         ],
         "type": "OBJ_COUNT_GT"
+      },
+      {
+        "params": [
+          "<S>"
+        ],
+        "type": "NOT_NULL"
+      },
+      {
+        "params": [
+          "<P>"
+        ],
+        "type": "NOT_NULL"
       }
     ]
   },
@@ -128,6 +152,18 @@
           1
         ],
         "type": "OBJ_COUNT_GT"
+      },
+      {
+        "params": [
+          "<S>"
+        ],
+        "type": "NOT_NULL"
+      },
+      {
+        "params": [
+          "<P>"
+        ],
+        "type": "NOT_NULL"
       }
     ]
   },

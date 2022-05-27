@@ -133,7 +133,10 @@ def find_filter_options(object_idxs, scene_struct, metadata, template):
     precompute_filter_options(scene_struct, metadata, template)
 
   attribute_map = {}
-  object_idxs = set(object_idxs)
+  try:
+    object_idxs = set(object_idxs)
+  except TypeError as err:
+    raise err
   for k, vs in scene_struct['_filter_options'].items():
     attribute_map[k] = sorted(list(object_idxs & vs))
 
@@ -342,6 +345,20 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
           if skip:
             if verbose:
               print('skipping due to NULL constraint')
+              print(constraint)
+              print(state['vals'])
+            skip_state = True
+            break
+      elif constraint['type'] == "NOT_NULL":
+        p = constraint['params'][0]
+        p_type = param_name_to_type[p]
+        v = state['vals'].get(p)
+        if v is not None:
+          skip = False
+          if p_type in ('Object-Category', 'Part-Category') and v == '': skip = True
+          if skip:
+            if verbose:
+              print('skipping due to NOT_NULL constraint')
               print(constraint)
               print(state['vals'])
             skip_state = True
