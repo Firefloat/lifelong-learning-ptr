@@ -1,106 +1,106 @@
 [
-    {
-        "text": [
-            "What object can you see in the picture?"
+  {
+    "text": [
+      "What object can you see in the picture?"
+    ],
+    "nodes": [
+      {
+        "inputs": [
         ],
-        "nodes": [
-            {
-                "inputs": [
-                ],
-                "type": "what_question"
-            }
-        ],
+        "type": "what_question"
+      }
+    ],
+    "params": [
+      {
+        "type": "Object-Category",
+        "name": "<S3>"
+      }
+    ],
+    "constraints": [
+      {
         "params": [
-            {
-                "type": "Object-Category",
-                "name": "<S3>"
-            }
+          1
         ],
-        "constraints": [
-            {
-                "params": [
-                    1
-                ],
-                "type": "OBJ_COUNT_GT"
-            }
-        ]
-    },
-    {
-        "text": [
-            "What is the thing in the scene?"
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
+  },
+  {
+    "text": [
+      "What is the thing in the scene?"
+    ],
+    "nodes": [
+      {
+        "inputs": [
         ],
-        "nodes": [
-            {
-                "inputs": [
-                ],
-                "type": "what_question"
-            }
-        ],
+        "type": "what_question"
+      }
+    ],
+    "params": [
+      {
+        "type": "Object-Category",
+        "name": "<S3>"
+      }
+    ],
+    "constraints": [
+      {
         "params": [
-            {
-                "type": "Object-Category",
-                "name": "<S3>"
-            }
+          1
         ],
-        "constraints": [
-            {
-                "params": [
-                    1
-                ],
-                "type": "OBJ_COUNT_GT"
-            }
-        ]
-    },
-    {
-        "text": [
-            "What is the name of the object in the image?"
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
+  },
+  {
+    "text": [
+      "What is the name of the object in the image?"
+    ],
+    "nodes": [
+      {
+        "inputs": [
         ],
-        "nodes": [
-            {
-                "inputs": [
-                ],
-                "type": "what_question"
-            }
-        ],
+        "type": "what_question"
+      }
+    ],
+    "params": [
+      {
+        "type": "Object-Category",
+        "name": "<S3>"
+      }
+    ],
+    "constraints": [
+      {
         "params": [
-            {
-                "type": "Object-Category",
-                "name": "<S3>"
-            }
+          1
         ],
-        "constraints": [
-            {
-                "params": [
-                    1
-                ],
-                "type": "OBJ_COUNT_GT"
-            }
-        ]
-    },
-    {
-        "text": [
-            "How is this object called?"
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
+  },
+  {
+    "text": [
+      "How is this object called?"
+    ],
+    "nodes": [
+      {
+        "inputs": [
         ],
-        "nodes": [
-            {
-                "inputs": [
-                ],
-                "type": "what_question"
-            }
-        ],
+        "type": "what_question"
+      }
+    ],
+    "params": [
+      {
+        "type": "Object-Category",
+        "name": "<S3>"
+      }
+    ],
+    "constraints": [
+      {
         "params": [
-            {
-                "type": "Object-Category",
-                "name": "<S3>"
-            }
+          1
         ],
-        "constraints": [
-            {
-                "params": [
-                    1
-                ],
-                "type": "OBJ_COUNT_GT"
-            }
-        ]
-    }
+        "type": "OBJ_COUNT_GT"
+      }
+    ]
+  }
 ]
