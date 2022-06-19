@@ -11,11 +11,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--input_scene_files', default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/scenes_new',
                     help="JSON file containing ground-truth scene information for all images " +
                          "from render_images.py")
-parser.add_argument('--metadata_file', default='metadata_partnet.json',
+parser.add_argument('--metadata_file', default='question_generation/metadata_partnet.json',
                     help="JSON file containing metadata about functions")
-parser.add_argument('--synonyms_json', default='synonyms.json',
+parser.add_argument('--synonyms_json', default='question_generation/synonyms.json',
                     help="JSON file defining synonyms for parameter values")
-parser.add_argument('--template_dir', default='PARTNET_templates',
+parser.add_argument('--template_dir', default='question_generation/PARTNET_templates',
                     help="Directory containing JSON templates for questions")
 parser.add_argument('--output_dir', default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/questions',
                     help="Directory containing JSON templates for questions")

@@ -5,7 +5,8 @@ import shutil
 from datetime import datetime as dt
 from collections import Counter
 sys.path.append('.')
-from add_parts import *
+from image_generation.add_parts import *
+# from add_parts import *
 from PIL import Image
 
 INSIDE_BLENDER = True
@@ -14,10 +15,10 @@ try:
   from mathutils import Vector
 except ImportError as e:
   INSIDE_BLENDER = False
-  
+
 if INSIDE_BLENDER:
-  from mathutils import Matrix
-  import utils
+  import image_generation.utils as utils
+#  import utils
 
 
 THIS_DIR = pathlib.Path(__file__).parent
@@ -85,7 +86,7 @@ parser.add_argument(
     type=int,
     help="All objects will have at least this many visible pixels in the " +
          "final rendered images; this ensures that no objects are fully " +
-         "occluded by other objects." 
+         "occluded by other objects."
 )
 parser.add_argument(
     '--max_retries',
@@ -280,7 +281,7 @@ def main(args):
     os.makedirs(args.output_depth_dir)
   if args.save_blendfiles == 1 and not os.path.isdir(args.output_blend_dir):
     os.makedirs(args.output_blend_dir)
-  
+
   all_scene_paths = []
   for i in range(args.num_images):
     img_path = img_template % (i + args.start_idx)
@@ -339,7 +340,7 @@ def render_scene(args,
   ):
 
   # Load the main blendfile
-  base_scene_blendfiles = ['data/base_scene2.blend']
+  base_scene_blendfiles = str(DATA_DIR / 'base_scene2.blend')
   bpy.ops.wm.open_mainfile(filepath=random.choice(base_scene_blendfiles))
 
   # Set render arguments so we can get pixel coordinates later.
@@ -406,7 +407,7 @@ def render_scene(args,
   plane_behind = (cam_behind - cam_behind.project(plane_normal)).normalized()
   plane_left = (cam_left - cam_left.project(plane_normal)).normalized()
   plane_up = cam_up.project(plane_normal).normalized()
-  
+
   bpy.context.scene.update()
   location, rotation = bpy.data.objects['Camera'].matrix_world.decompose()[0:2]
   K = utils.get_3x4_P_matrix_from_blender(bpy.data.objects['Camera'])[0]
@@ -423,8 +424,7 @@ def render_scene(args,
   mat.use_nodes = True
 
   walls = ["wall1.png", "wall2.jpg", "wall3.jpg", "wall4.jpg"]
-  path = pathlib.Path.cwd()
-  image_path = str(path / "materials" / random.choice(walls))
+  image_path = str(THIS_DIR / "materials" / random.choice(walls))
 
   nt = mat.node_tree
   nodes = nt.nodes
@@ -453,14 +453,13 @@ def render_scene(args,
   # map_node.rotation[2] = math.radians(90)
   # map_node.scale[0] = 10.0
   # map_node.scale[1] = 10.0
-  
+
 
   mat2 = bpy.data.materials.new(name="Floor")
   mat2.use_nodes = True
 
   floors = ["floor1.jpg", "floor2.png", "floor3.jpg", "floor4.jpg"]
-  path = pathlib.Path.cwd()
-  image_path = str(path / "materials" / random.choice(floors))
+  image_path = str(THIS_DIR / "materials" / random.choice(floors))
 
   nt = mat2.node_tree
   nodes = nt.nodes
@@ -484,7 +483,7 @@ def render_scene(args,
   links.new(diffuse.inputs['Color'],   texture.outputs['Color'])
 
 
-  #Check if the active object has a material slot, create one if it doesn't. 
+  #Check if the active object has a material slot, create one if it doesn't.
   #Assign the material to the first slot for the active object.
   for obj in bpy.data.objects:
     if "wall" in obj.name:
@@ -602,12 +601,12 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
     # objects along all cardinal directions.
 
     # Choose random categories
-    from numpy.random import choice 
-    obj_name = choice(object_list, 1, p=weight_list)[0] 
+    from numpy.random import choice
+    obj_name = choice(object_list, 1, p=weight_list)[0]
     scales = {'Bed': 1.5, 'Table': 1.5, 'Refrigerator': 1.5, 'Chair': 1, 'Cart': 1.25}
     # Choose random orientation for the object.
 
-        
+
     num_tries = 0
     r = scales[obj_name]
     while True:
@@ -621,9 +620,9 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
           cmd = 'rm -rf %s' %args.tmp_dir
           call(cmd, shell=True)
         return add_random_objects(scene_struct, num_objects, args, camera)
-      
+
       x = random.uniform(-5, 5)
-      
+
       y = random.uniform(-8, 3)
 
       dists_good = True
@@ -638,7 +637,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
 
       if dists_good and margins_good:
         break
-    
+
     base = 0.2
     if obj_name == 'Cart':
       base = 0.5
@@ -650,7 +649,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
 
     # get a random object
     # if obj_name in ['Chair', 'Table', 'Bed', 'Cart']:
-    category_path = "./data/%s.json" % obj_name.lower()
+    category_path = str(DATA_DIR / "%s.json") % obj_name.lower()
     f = open(category_path)
     objs = json.load(f)
     if split == "val": objs = objs[:int (len(objs) * 0.14286) - 1]
@@ -661,7 +660,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
     else:
       obj = random.choice(objs)
       id2 = obj['anno_id']
- 
+
     if obj_name == 'Cart':
       # cur_shape_dir = "../../cart/%s"%id2
       cur_shape_dir = "%s/%s"%(args.mobility_dir, id2)
@@ -688,7 +687,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
     scale = np.sqrt(np.max(np.sum(root_v**2, axis=1)))
     scale /= scales[obj_name]
     root_v /= scale
-    # center = np.min(root_v, axis=0) 
+    # center = np.min(root_v, axis=0)
     # root_v -= center
 
     try:
@@ -699,7 +698,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
       cur_result_json = os.path.join(cur_shape_dir, 'result.json')
       with open(cur_result_json, 'r') as fin:
           tree_hier = json.load(fin)[0]
-      
+
     obj_name2 = obj_name + str(i)
 
     #get annotations
@@ -714,9 +713,9 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
     plane_dict = dict()
 
     final_objs = []
-    _, _, part_color, part_count, part_objs, all_objects, line_geo, plane_geo = add_one_part(scale, tree_hier, cur_part_dir, cur_render_dir, obj_name2, part_list, geo_list1, geo_list2, part_dict, count_dict, objs_dict, final_objs, line_dict, plane_dict)    
+    _, _, part_color, part_count, part_objs, all_objects, line_geo, plane_geo = add_one_part(scale, tree_hier, cur_part_dir, cur_render_dir, obj_name2, part_list, geo_list1, geo_list2, part_dict, count_dict, objs_dict, final_objs, line_dict, plane_dict)
 
-    line_geo_final, plane_geo_final, part_color_all, part_color_final, part_count_final,  geometry, final_objects = revise_annotations(line_geo, plane_geo, part_color, part_count, all_objects, obj_name, part_list2, count_list, theta) 
+    line_geo_final, plane_geo_final, part_color_all, part_color_final, part_count_final,  geometry, final_objects = revise_annotations(line_geo, plane_geo, part_color, part_count, all_objects, obj_name, part_list2, count_list, theta)
 
     keep = check_part(obj_name, part_count_final, part_color_final)
     if not keep:
@@ -729,7 +728,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
 
     rendered_objs = []
     for k, v in part_objs.items():
-      for val in v: 
+      for val in v:
         rendered_objs.append(val)
 
     part_objs['other'] = []
@@ -738,7 +737,7 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
     for obj_file in leaf_part_ids:
       if not obj_file in rendered_objs:
         part_objs['other'].append(obj_file)
-        cur_v_list = []; cur_f_list = []; cur_v_num = 0; 
+        cur_v_list = []; cur_f_list = []; cur_v_num = 0;
         v, f = load_obj(os.path.join(cur_part_dir, obj_file+'.obj'))
         # v -= center
         v /= scale
@@ -782,12 +781,12 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
         print ("occluded part: %s" %part)
         if part in part_count_occluded.keys():
           part_count_occluded[part] -= 1
-          if part_count_occluded[part] == 0: 
+          if part_count_occluded[part] == 0:
             del part_count_occluded[part]
             if part in part_color_occluded.keys(): del part_color_occluded[part]
         else:
           if part in part_color_occluded.keys(): del part_color_occluded[part]
-        
+
       else:
         if part in part_color.keys():
           # try:
@@ -826,16 +825,16 @@ def add_random_objects(scene_struct, num_objects, args, camera, split="train"):
 
     if not keep:
       bpy.data.objects[obj_name2].select = True
-      bpy.ops.object.delete() 
+      bpy.ops.object.delete()
       cmd = 'rm -rf %s'%args.tmp_dir
       call(cmd, shell=True)
       i -= 1
-      if i >= 5 and tries[i] >= 50: 
+      if i >= 5 and tries[i] >= 50:
         break
       else:
         continue
 
-    cmd = 'rm -rf %s'%args.tmp_dir 
+    cmd = 'rm -rf %s'%args.tmp_dir
     call(cmd, shell=True)
 
     # Record data about the object in the scene data structure
@@ -901,7 +900,7 @@ def revise_annotations(line_geo, plane_geo, part_color, part_count, all_objects,
       geo = rotation_matrix.dot(geo).tolist()
 
       line_geo_final[part] = geo
-    
+
     for part, g in plane_geo.items():
       part = utils.rename_part(part, obj_name)
       stand = g[0]
@@ -913,10 +912,10 @@ def revise_annotations(line_geo, plane_geo, part_color, part_count, all_objects,
     for part, color in part_color.items():
       part_color_all[part] = color
       part = utils.rename_part(part, obj_name)
-      
+
       if part in part_list2:
         part_color_final[part] = color
-    
+
     for part in all_objects:
       part = utils.rename_part(part, obj_name)
       final_objects.append(part)
@@ -939,7 +938,7 @@ def check_part(obj_name, part_count_final, part_color_final):
       else:
         print ("wheel not paired with leg")
         keep = False
-        
+
     if obj_name == 'Chair' and not ('leg' in part_color_final.keys() or 'central_support' in part_color_final.keys() or 'pedestal' in part_color_final.keys()):
       print ("lack base of chair")
       keep = False
@@ -952,7 +951,7 @@ def check_part(obj_name, part_count_final, part_color_final):
       print ("duplicate arm entry")
       keep = False
     return keep
-    
+
 def compute_all_relationships(scene_struct, eps=0.2):
   """
   Computes relationships between all pairs of objects in the scene.
@@ -995,5 +994,5 @@ if __name__ == '__main__':
     print('You can also run as a standalone python script to view all')
     print('arguments like this:')
     print()
-    print('python render_images.py --help')
+    print('python render_images_partnet.py --help')
 
