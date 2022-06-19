@@ -341,7 +341,7 @@ def render_scene(args,
 
   # Load the main blendfile
   base_scene_blendfiles = str(DATA_DIR / 'base_scene2.blend')
-  bpy.ops.wm.open_mainfile(filepath=random.choice(base_scene_blendfiles))
+  bpy.ops.wm.open_mainfile(filepath=base_scene_blendfiles)
 
   # Set render arguments so we can get pixel coordinates later.
   # We use functionality specific to the CYCLES renderer so BLENDER_RENDER
