@@ -298,15 +298,18 @@ parser.add_argument('--time_dfs', action='store_true',
 parser.add_argument('--profile', action='store_true',
                     help="If given then run inside cProfile")
 
+
 args = parser.parse_args()
 
+# following image_generation parameters are left out because they cause issues and are not required for this project:
+# --base_scene_blendfile {args.base_scene_blendfile} \
+# --properties_json {args.properties_json} \
+# --material_dir {args.material_dir} \
+# --license {args.license} \
 
 def generate_images():
-    # "C:/Program Files/Git/bin/sh"
+    # replace git-bash for "{path_to_git_directory}/Git/bin/sh" in the following command to see more detailed errors
     output = subprocess.run(f'git-bash -i -c "blender --python image_generation/render_images_partnet.py --background -- \
-    --base_scene_blendfile {args.base_scene_blendfile} \
-    --properties_json {args.properties_json} \
-    --material_dir {args.material_dir} \
     --min_objects {args.min_objects} \
     --max_objects {args.max_objects} \
     --min_dist {args.min_objects} \
@@ -325,7 +328,6 @@ def generate_images():
     --output_blend_dir {args.output_blend_dir} \
     --save_blendfiles {args.save_blendfiles} \
     --version {args.version} \
-    --license {args.license} \
     --date {args.date} \
     --use_gpu {args.use_gpu} \
     --width {args.width} \
@@ -337,28 +339,22 @@ def generate_images():
     --render_num_samples {args.render_num_samples} \
     --render_min_bounces {args.render_min_bounces} \
     --render_max_bounces {args.render_max_bounces} \
-    --render_tile_size {args.render_title_size} \
+    --render_tile_size {args.render_tile_size} \
     --data_dir {args.data_dir} \
     --mobility_dir {args.mobility_dir}',
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-    print(output)
+    return output
 
 
-# --data_dir B:/PartNetData/partnet \
-# --mobility_dir B:/PartNetData/mobility --use_gpu 1 \
-# --output_image_dir {ROOT_DIR}/single_item/output/images \
-# --output_scene_dir {ROOT_DIR}/single_item/output/scenes \
-# --output_depth_dir {ROOT_DIR}/single_item/output/depths \
-# --output_scene_file {ROOT_DIR}/single_item/output/ptr_scenes.json \
-# --output_blend_dir {ROOT_DIR}/single_item/output/blendfiles \
-# --num_images  1 \
-# --min_objects 1 \
-# --max_objects 1
+# following question_generation parameters are left out because they cause issues and are not required for this project:
+#--verbose {args.verbose} \
+#--time_dfs {args.time_dfs} \
+#--profile {args.profile}
 
 
 def generate_questions():
     output = subprocess.run(f'python question_generation/generate_questions_partnet.py \
-    --input_scene_files {args.input_scene_file} \
+    --input_scene_files {args.input_scene_files} \
     --metadata_file {args.metadata_file} \
     --synonyms_json {args.synonyms_json} \
     --template_dir {args.template_dir} \
@@ -368,24 +364,17 @@ def generate_questions():
     --num_scenes {args.num_scenes} \
     --templates_per_image {args.templates_per_image} \
     --instances_per_template {args.instances_per_template} \
-    --template_types {args.tmplate_types} \
-    --reset_counts_every {args.reset_counts_every} \
-    --verbose {args.verbose} \
-    --time_dfs {args.time_dfs} \
-    --profile {args.profile}',
+    --template_types {args.template_types} \
+    --reset_counts_every {args.reset_counts_every}',
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-
-    # --instances_per_template 15 \
-    # --template_types single_object \
-    # --input_scene_files {ROOT_DIR}/single_item/output/scenes \
-    # --output_dir {ROOT_DIR}/single_item/output \
-    # --output_questions_file questions_file',
-    print(output)
+    return output
 
 
 def main():
-    generate_images()
-    generate_questions()
+    image_output = generate_images()
+    print('####IMAGE GENERATION OUTPUT \n ', image_output)
+    question_output = generate_questions()
+    print('####QUESTION GENERATION OUTPUT \n ', question_output)
 
 
 if __name__ == '__main__':

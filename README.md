@@ -84,3 +84,11 @@ python.exe -m pip install pybullet
 7. If you get an error `rc.exe` not found you need to go to the folder `C:\Program Files (x86)\Windows Kits` and search in all folders for the `rc.exe`
 8. Add the folder with the `rc.exe` to your path and restart the console
 9. You should be good to go and can install also numpy and pillow with the above command.
+
+# Install git-bash
+
+TODO
+
+add GIT directory to PATH environment variable
+
+TODO
