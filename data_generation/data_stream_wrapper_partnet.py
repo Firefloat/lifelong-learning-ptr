@@ -152,7 +152,7 @@ def parse_args():
         '--base_scene_blendfile',
         default=str(IMAGE_DIR / 'base_scene.blend'),
         help="Base blender file on which all scenes are based; includes " +
-            "ground plane, lights, and camera."
+             "ground plane, lights, and camera."
     )
     parser.add_argument(
         '--properties_json',
@@ -188,16 +188,16 @@ def parse_args():
         default=1.5,
         type=float,
         help="Along all cardinal directions (left, right, front, back), all " +
-            "objects will be at least this distance apart. This makes resolving " +
-            "spatial relationships slightly less ambiguous."
+             "objects will be at least this distance apart. This makes resolving " +
+             "spatial relationships slightly less ambiguous."
     )
     parser.add_argument(
         '--margin2',
         default=8,
         type=float,
         help="Along all cardinal directions (left, right, front, back), all " +
-            "objects will be at least this distance apart. This makes resolving " +
-            "spatial relationships slightly less ambiguous."
+             "objects will be at least this distance apart. This makes resolving " +
+             "spatial relationships slightly less ambiguous."
     )
     parser.add_argument(
         '--min_pixels_per_object',
@@ -241,37 +241,6 @@ def parse_args():
         help="Name of the split for which we are rendering. This will be added to " +
              "the names of rendered images, and will also be stored in the JSON " +
              "scene structure for each image."
-    )
-    parser.add_argument(
-        '--output_image_dir',
-        default=str(IMAGE_OUTPUT_DIR / 'images'),
-        help="The directory where output images will be stored. It will be " +
-             "created if it does not exist."
-    )
-    parser.add_argument(
-        '--output_scene_dir',
-        default=str(IMAGE_OUTPUT_DIR / 'scenes'),
-        help="The directory where output JSON scene structures will be stored. " +
-             "It will be created if it does not exist."
-    )
-    parser.add_argument(
-        '--output_depth_dir',
-        default=str(IMAGE_OUTPUT_DIR / 'depths'),
-        help="The directory where output JSON scene structures will be stored. " +
-             "It will be created if it does not exist."
-    )
-    parser.add_argument(
-        '--output_scene_file',
-        default=str(IMAGE_OUTPUT_DIR / 'ptr_scenes.json'),
-        help="Path to write a single JSON file containing all scene information"
-    )
-    parser.add_argument(
-        '--output_blend_dir',
-        default=str(IMAGE_OUTPUT_DIR / 'blendfiles'),
-        help="The directory where blender scene files will be stored, if the " +
-             "user requested that these files be saved using the " +
-             "--save_blendfiles flag; in this case it will be created if it does " +
-             "not already exist."
     )
     parser.add_argument(
         '--save_blendfiles',
@@ -377,29 +346,12 @@ def parse_args():
     parser.add_argument('--mobility_dir', default=str(IMAGE_DIR / 'cart'), type=str)
 
     # question generation arguments
-
-    # Inputs
-    parser.add_argument('--input_scene_files',
-                        default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/scenes_new',
-                        help="JSON file containing ground-truth scene information for all images " +
-                             "from render_images.py")
     parser.add_argument('--metadata_file', default='question_generation/metadata_partnet.json',
                         help="JSON file containing metadata about functions")
     parser.add_argument('--synonyms_json', default='question_generation/synonyms.json',
                         help="JSON file defining synonyms for parameter values")
     parser.add_argument('--template_dir', default='question_generation/PARTNET_templates',
                         help="Directory containing JSON templates for questions")
-    parser.add_argument('--output_dir',
-                        default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/questions',
-                        help="Directory containing JSON templates for questions")
-    # parser.add_argument('--new_scene_dir', default='../try_nscl/train/scenes_renew',
-    #     help="Directory containing JSON templates for questions")
-
-    # Output
-    parser.add_argument('--output_questions_file',
-                        default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/PARTNET_questions.json',
-                        help="The output file to write containing generated questions")
-
     # Control which and how many images to process
     parser.add_argument('--scene_start_idx', default=0, type=int,
                         help="The image at which to start generating questions; this allows " +
