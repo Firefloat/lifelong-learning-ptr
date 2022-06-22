@@ -10,6 +10,33 @@ IMAGE_DATA_DIR = IMAGE_DIR / 'data'
 IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = str(pathlib.Path(__file__).parent).replace('\\', '/')
 
+
+class FolderStructure:
+
+    def __init__(self, root: pathlib.Path) -> None:
+        self._root = root
+
+    @property
+    def image_dir(self) -> pathlib.Path:
+        return self._root / 'images'
+
+    @property
+    def scene_dir(self) -> pathlib.Path:
+        return self._root / 'scenes'
+
+    @property
+    def depth_dir(self) -> pathlib.Path:
+        return self._root / 'depths'
+
+    @property
+    def scene_file(self) -> pathlib.Path:
+        return self._root / 'ptr_scenes.json'
+
+    @property
+    def blend_dir(self) -> pathlib.Path:
+        return self._root / 'blendfiles'
+
+
 # image generation arguments
 
 # Input options
