@@ -46,6 +46,17 @@ class FolderCreator:
     def __init__(self, folder_structure: FolderStructure) -> None:
         self._folder_structure = folder_structure
 
+        if not self._folder_structure.root.exists():
+            self._folder_structure.root.mkdir(parents=True)
+        elif self._folder_structure.root.is_file():
+            raise RuntimeError(
+                f"Output directory {self._folder_structure.root} is a file!"
+            )
+        elif any(self._folder_structure.root.iterdir()):
+            raise RuntimeError(
+                f"Output directory {self._folder_structure.root} is not empty!"
+            )
+
 
 # image generation arguments
 
