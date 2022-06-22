@@ -1,7 +1,7 @@
 import argparse
+from datetime import datetime as dt
 import pathlib
 import subprocess
-from datetime import datetime as dt
 
 parser = argparse.ArgumentParser()
 
@@ -17,24 +17,34 @@ class FolderStructure:
         self._root = root
 
     @property
+    def root(self) -> pathlib.Path:
+        return self._root
+
+    @property
     def image_dir(self) -> pathlib.Path:
-        return self._root / 'images'
+        return self.root / 'images'
 
     @property
     def scene_dir(self) -> pathlib.Path:
-        return self._root / 'scenes'
+        return self.root / 'scenes'
 
     @property
     def depth_dir(self) -> pathlib.Path:
-        return self._root / 'depths'
+        return self.root / 'depths'
 
     @property
     def scene_file(self) -> pathlib.Path:
-        return self._root / 'ptr_scenes.json'
+        return self.root / 'ptr_scenes.json'
 
     @property
     def blend_dir(self) -> pathlib.Path:
-        return self._root / 'blendfiles'
+        return self.root / 'blendfiles'
+
+
+class FolderCreator:
+
+    def __init__(self, folder_structure: FolderStructure) -> None:
+        self._folder_structure = folder_structure
 
 
 # image generation arguments
