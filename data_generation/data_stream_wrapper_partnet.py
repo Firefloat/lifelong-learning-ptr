@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
 IMAGE_DATA_DIR = IMAGE_DIR / 'data'
 IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
-ROOT_DIR = str(pathlib.Path(__file__).parent).replace('\\', '/')
+ROOT_DIR = pathlib.Path(__file__).parent
 
 
 class FolderStructure:
@@ -61,6 +61,11 @@ class FolderCreator:
 # image generation arguments
 
 # Input options
+parser.add_argument(
+    '--out',
+    default=str(ROOT_DIR / 'out'),
+    help='Directory for all the outputs'
+)
 parser.add_argument(
     '--base_scene_blendfile',
     default=str(IMAGE_DIR / 'base_scene.blend'),
