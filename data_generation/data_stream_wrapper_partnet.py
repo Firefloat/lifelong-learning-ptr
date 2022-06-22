@@ -45,10 +45,9 @@ class FolderCreator:
 
     def __init__(self, folder_structure: FolderStructure) -> None:
         self._folder_structure = folder_structure
+        self._folder_structure.root.mkdir(parents=True, exist_ok=True)
 
-        if not self._folder_structure.root.exists():
-            self._folder_structure.root.mkdir(parents=True)
-        elif self._folder_structure.root.is_file():
+        if self._folder_structure.root.is_file():
             raise RuntimeError(
                 f"Output directory {self._folder_structure.root} is a file!"
             )
@@ -57,13 +56,19 @@ class FolderCreator:
                 f"Output directory {self._folder_structure.root} is not empty!"
             )
 
+    def create_file_structure(self) -> None:
+        self._folder_structure.image_dir.mkdir()
+        self._folder_structure.scene_dir.mkdir()
+        self._folder_structure.depth_dir.mkdir()
+        self._folder_structure.blend_dir.mkdir()
+
 
 # image generation arguments
 
 # Input options
 parser.add_argument(
     '--out',
-    default=str(ROOT_DIR / 'out'),
+    default=str(ROOT_DIR / f'out_{dt.now().timestamp()}'),
     help='Directory for all the outputs'
 )
 parser.add_argument(
@@ -360,7 +365,11 @@ args = parser.parse_args()
 # --material_dir {args.material_dir} \
 # --license {args.license} \
 
+
 def generate_images():
+    folder_structure = FolderStructure(pathlib.Path(args.out))
+    creator = FolderCreator(folder_structure)
+    creator.create_file_structure()
     # replace git-bash for "{path_to_git_directory}/Git/bin/sh" in the following command to see more detailed errors
     output = subprocess.run(f'git-bash -i -c "blender --python image_generation/render_images_partnet.py --background -- \
     --min_objects {args.min_objects} \
@@ -374,11 +383,11 @@ def generate_images():
     --num_images {args.num_images} \
     --filename_prefix {args.filename_prefix} \
     --split {args.split} \
-    --output_image_dir {args.output_image_dir} \
-    --output_scene_dir {args.output_scene_dir} \
-    --output_depth_dir {args.output_depth_dir} \
-    --output_scene_file {args.output_scene_file} \
-    --output_blend_dir {args.output_blend_dir} \
+    --output_image_dir {folder_structure.image_dir.absolute().as_posix()} \
+    --output_scene_dir {folder_structure.scene_dir.absolute().as_posix()} \
+    --output_depth_dir {folder_structure.depth_dir.absolute().as_posix()} \
+    --output_scene_file {folder_structure.scene_file.absolute().as_posix()} \
+    --output_blend_dir {folder_structure.blend_dir.absolute().as_posix()} \
     --save_blendfiles {args.save_blendfiles} \
     --version {args.version} \
     --date {args.date} \
