@@ -438,6 +438,7 @@ def parse_args():
 def main():
     args = parse_args()
     folder_structure = FolderStructure(pathlib.Path(args.out))
+    print(f"\nOutputfolder: {folder_structure.root.absolute()}\n")
     image_output = generate_images(folder_structure, args)
     print('####IMAGE GENERATION OUTPUT \n ', image_output)
     question_output = generate_questions(folder_structure, args)
