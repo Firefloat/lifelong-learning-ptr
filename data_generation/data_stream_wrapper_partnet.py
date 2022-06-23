@@ -205,8 +205,9 @@ def main_loop(args):
     creator = FolderCreator(root_folder)
     creator.create_file_structure()
 
-    print(f"\nOutputfolder: {creator.structure.root}\n")
+    print(f"\nOutputfolder for current run: {creator.structure.root}\n")
 
+    print("Generating output images, this can take a while...")
     image_output = generate_images(
         args=args,
         folder_structure=creator.structure,
@@ -214,6 +215,8 @@ def main_loop(args):
         max_objects=args.max_objects,
         num_images=args.num_images,
     )
+
+    print("Generating questions")
     question_output = generate_questions(
         args=args,
         folder_structure=creator.structure,
