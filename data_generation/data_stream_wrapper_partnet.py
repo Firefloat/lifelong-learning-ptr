@@ -46,32 +46,34 @@ class FolderStructure:
 
 class FolderCreator:
 
-    def __init__(self, folder_structure: FolderStructure) -> None:
-        self._folder_structure = folder_structure
+    def __init__(self, root_dir) -> None:
+        root_dir = pathlib.Path(root_dir)
+        self._folder_structure = FolderStructure(root_dir)
         self._folder_structure.root.mkdir(parents=True, exist_ok=True)
 
         if self._folder_structure.root.is_file():
             raise RuntimeError(
-                f"Output directory {self._folder_structure.root} is a file!"
+                f"Output directory {self.structure.root} is a file!"
             )
         elif any(self._folder_structure.root.iterdir()):
             raise RuntimeError(
-                f"Output directory {self._folder_structure.root} is not empty!"
+                f"Output directory {self.structure.root} is not empty!"
             )
 
+    @property
+    def structure(self) -> FolderStructure:
+        return self._folder_structure
+
     def create_file_structure(self) -> None:
-        self._folder_structure.image_dir.mkdir()
-        self._folder_structure.scene_dir.mkdir()
-        self._folder_structure.depth_dir.mkdir()
-        self._folder_structure.blend_dir.mkdir()
+        self.structure.image_dir.mkdir()
+        self.structure.scene_dir.mkdir()
+        self.structure.depth_dir.mkdir()
+        self.structure.blend_dir.mkdir()
 
 
 # image generation arguments
 
 def generate_images(folder_structure: FolderStructure, args):
-    folder_structure = FolderStructure(pathlib.Path(args.out))
-    creator = FolderCreator(folder_structure)
-    creator.create_file_structure()
 
     # replace git-bash for "{path_to_git_directory}/Git/bin/sh" in the
     # following command to see more detailed errors
@@ -389,12 +391,16 @@ def parse_args():
 
 def main():
     args = parse_args()
-    folder_structure = FolderStructure(pathlib.Path(args.out))
-    print(f"\nOutputfolder: {folder_structure.root.absolute()}\n")
-    image_output = generate_images(folder_structure, args)
-    print('####IMAGE GENERATION OUTPUT \n ', image_output)
-    question_output = generate_questions(folder_structure, args)
-    print('####QUESTION GENERATION OUTPUT \n ', question_output)
+    creator = FolderCreator(args.out)
+    creator.create_file_structure()
+
+    print(f"\nOutputfolder: {creator.structure.root.absolute()}\n")
+
+    image_output = generate_images(creator.structure, args)
+    print('\n####IMAGE GENERATION OUTPUT \n ', image_output)
+
+    question_output = generate_questions(creator.structure, args)
+    print('\n####QUESTION GENERATION OUTPUT \n ', question_output)
 
 
 if __name__ == '__main__':
