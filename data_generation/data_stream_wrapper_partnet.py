@@ -10,6 +10,18 @@ IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
 IMAGE_DATA_DIR = IMAGE_DIR / 'data'
 IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = pathlib.Path(__file__).parent
+TEMPLATE_ORDER = [
+    'analogy',
+    'arithmetic',
+    'comparison',
+    'geometry',
+    'one_hop',
+    # 'physics',
+    'same_relate',
+    'single_object',
+    'what_question',
+    'zero_hop',
+]
 _NO_DIR = object()
 
 
@@ -109,7 +121,9 @@ class FolderCreator:
 
         root_dir = pathlib.Path(root_dir)
 
-        if root_dir.is_file():
+        if not root_dir.exists():
+            pass
+        elif root_dir.is_file():
             raise RuntimeError(
                 f"Output directory {self.structure.root} is a file!"
             )
@@ -271,33 +285,34 @@ def generate_questions(
     )
 
 
-def main_loop(args):
+def main_loop(args) -> None:
     args = parse_args()
     root_folder = assert_root_folder(args.out)
 
-    creator = FolderCreator(root_folder)
-    creator.create_file_structure()
+    for template_type in TEMPLATE_ORDER:
+        print(f"Creating images and questions for '{template_type}'")
 
-    print(f"\nOutputfolder for current run: {creator.structure.root}\n")
+        creator = FolderCreator(root_folder / template_type)
+        creator.create_file_structure()
 
-    print("Generating output images, this can take a while...")
-    image_output = generate_images(
-        args=args,
-        folder_structure=creator.structure,
-        min_objects=args.min_objects,
-        max_objects=args.max_objects,
-        num_images=args.num_images,
-    )
+        print(f"\nOutputfolder for current run: {creator.structure.root}\n")
 
-    print("Generating questions")
-    question_output = generate_questions(
-        args=args,
-        folder_structure=creator.structure,
-        instances_per_template=args.instances_per_template,
-        template_types=args.template_types,
-    )
+        print("Generating output images, this can take a while...")
+        generate_images(
+            args=args,
+            folder_structure=creator.structure,
+            min_objects=args.min_objects,
+            max_objects=args.max_objects,
+            num_images=args.num_images,
+        )
 
-    return image_output, question_output
+        print("Generating questions")
+        generate_questions(
+            args=args,
+            folder_structure=creator.structure,
+            instances_per_template=args.instances_per_template,
+            template_types=template_type,
+        )
 
 
 def main():
