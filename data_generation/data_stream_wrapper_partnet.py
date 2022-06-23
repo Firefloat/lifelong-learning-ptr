@@ -53,6 +53,10 @@ def get_folder_number(dir: pathlib.Path) -> int:
         if str(d).split('_')[1].isnumeric()
     ]
     nums = sorted(nums)
+
+    if not nums:
+        return 0
+
     return nums[-1] + 1
 
 
@@ -191,6 +195,37 @@ def generate_questions(
         --reset_counts_every {args.reset_counts_every}',
 
     )
+
+
+def main_loop(args):
+    args = parse_args()
+    root_folder = assert_root_folder(args.out)
+
+    creator = FolderCreator(root_folder)
+    creator.create_file_structure()
+
+    print(f"\nOutputfolder: {creator.structure.root}\n")
+
+    image_output = generate_images(
+        args=args,
+        folder_structure=creator.structure,
+        min_objects=args.min_objects,
+        max_objects=args.max_objects,
+        num_images=args.num_images,
+    )
+    question_output = generate_questions(
+        args=args,
+        folder_structure=creator.structure,
+        instances_per_template=args.instances_per_template,
+        template_types=args.template_types,
+    )
+
+    return image_output, question_output
+
+
+def main():
+    args = parse_args()
+    main_loop(args)
 
 
 def parse_args():
@@ -439,37 +474,6 @@ def parse_args():
     parser.add_argument('--profile', action='store_true',
                         help="If given then run inside cProfile")
     return parser.parse_args()
-
-
-def main_loop(args):
-    args = parse_args()
-    root_folder = assert_root_folder(args.out)
-
-    creator = FolderCreator(root_folder)
-    creator.create_file_structure()
-
-    print(f"\nOutputfolder: {creator.structure.root}\n")
-
-    image_output = generate_images(
-        args=args,
-        folder_structure=creator.structure,
-        min_objects=args.min_objects,
-        max_objects=args.max_objects,
-        num_images=args.num_images,
-    )
-    question_output = generate_questions(
-        args=args,
-        folder_structure=creator.structure,
-        instances_per_template=args.instances_per_template,
-        template_types=args.template_types,
-    )
-
-    return image_output, question_output
-
-
-def main():
-    args = parse_args()
-    main_loop(args)
 
 
 if __name__ == '__main__':
