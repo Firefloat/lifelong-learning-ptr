@@ -156,8 +156,8 @@ def run_subprocess(command: str):
     signal(SIGINT, kill_proc)
 
     try:
-        for line in iter(lambda: process.stdout.readline(), b""):
-            sys.stdout.write(line.decode('utf-8'))
+        for ln in iter(lambda: process.stdout.readline(), b""):  # type: ignore
+            sys.stdout.write(ln.decode('utf-8'))
     except Exception:
         process.kill()
 
