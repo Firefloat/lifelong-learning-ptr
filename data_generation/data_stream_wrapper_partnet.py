@@ -1,6 +1,5 @@
 import argparse
 from datetime import datetime as dt
-import os
 import pathlib
 from signal import signal, SIGINT
 import subprocess
@@ -201,7 +200,6 @@ def generate_questions(
         --instances_per_template {instances_per_template} \
         --template_types {template_types} \
         --reset_counts_every {args.reset_counts_every}',
-
     )
 
 
