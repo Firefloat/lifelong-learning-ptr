@@ -114,8 +114,9 @@ def run_subprocess(command):
         process.kill()
         exit(0)
 
+    signal(SIGINT, kill_proc)
+
     try:
-        signal(SIGINT, kill_proc)
         for line in iter(lambda: process.stdout.readline(), b""):
             sys.stdout.write(line.decode('utf-8'))
     except Exception:
