@@ -14,6 +14,7 @@ _NO_DIR = object()
 
 
 class FolderStructure:
+    """Class that encapsulates the folder structure for a single run"""
 
     def __init__(self, root: pathlib.Path) -> None:
         self._root = root.absolute()
@@ -48,6 +49,20 @@ class FolderStructure:
 
 
 def get_folder_number(dir: pathlib.Path) -> int:
+    """Gets an incremental number for a folder, depending on how the other
+    folders are numbered, e.g. if a folder A contains the folders run_1 and 
+    run_2 the call to this function with get_folder_number(A) will return 3.
+
+    Parameters
+    ----------
+    dir : pathlib.Path
+        Directory containing numbered folders
+
+    Returns
+    -------
+    int
+        Next number for folder
+    """
     nums = [
         int(str(d).split('_')[1]) for d in dir.iterdir()
         if str(d).split('_')[1].isnumeric()
@@ -65,6 +80,18 @@ def is_windows() -> bool:
 
 
 def assert_root_folder(arg_path) -> pathlib.Path:
+    """Makes sure the root folder for the output exists
+
+    Parameters
+    ----------
+    arg_path : Any
+        Path that was passed by the user
+
+    Returns
+    -------
+    pathlib.Path
+        Path to the root folder for the output
+    """
     if arg_path is _NO_DIR:
         arg_path = ROOT_DIR / 'out'
         arg_path.mkdir(exist_ok=True)
@@ -76,6 +103,7 @@ def assert_root_folder(arg_path) -> pathlib.Path:
 
 
 class FolderCreator:
+    """Class that creates the project folder structure"""
 
     def __init__(self, root_dir) -> None:
 
@@ -104,13 +132,20 @@ class FolderCreator:
         self.structure.blend_dir.mkdir()
 
 
-def run_subprocess(command):
+def run_subprocess(command: str):
+    """Runs a command in a subprocess and prints the output to the current
+    console.
 
+    Parameters
+    ----------
+    command : str
+        Command to execute
+    """
     process = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        shell=True,
+        # shell=True,
     )
 
     def kill_proc(signal_received, frame):
@@ -127,14 +162,34 @@ def run_subprocess(command):
         process.kill()
 
 
-def get_bash_prefix(args) -> str:
+def get_bash_prefix(bash_path) -> str:
+    """Generates the correct bash-prefix for Windows systems, because the
+    code currently works only with the git-bash.
+
+    Parameters
+    ----------
+    bash_path : str/pathlib.Path
+        User arguments
+
+    Returns
+    -------
+    str
+        Correct prefix
+
+    Raises
+    ------
+    FileNotFoundError
+        If the git-bash path cannot be found an exception is raised
+    """
     bash_prefix = ''
 
     if is_windows():
-        git_bash_path = pathlib.Path(args.bash_path)
+        git_bash_path = pathlib.Path(bash_path)
         if not git_bash_path.exists():
             raise FileNotFoundError(
-                f"Git bash could not be found in path {git_bash_path}"
+                f"Git bash could not be found in path {git_bash_path}. Please "
+                "use the option --bash_path and specify where the git-bash "
+                "can be found on your system."
             )
 
         bash_prefix = f'"{str(git_bash_path)}" -i -c "'
@@ -152,7 +207,7 @@ def generate_images(
 
 ) -> None:
 
-    bash_prefix = get_bash_prefix(args)
+    bash_prefix = get_bash_prefix(args.bash_path)
 
     run_subprocess(
         f'{bash_prefix}blender --python \
