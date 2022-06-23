@@ -14,7 +14,7 @@ _NO_DIR = object()
 class FolderStructure:
 
     def __init__(self, root: pathlib.Path) -> None:
-        self._root = root
+        self._root = root.absolute()
 
     @property
     def root(self) -> pathlib.Path:
@@ -96,29 +96,37 @@ class FolderCreator:
 
 # image generation arguments
 
-def generate_images(folder_structure: FolderStructure, args):
+def generate_images(
+    *,
+    args,
+    folder_structure: FolderStructure,
+    min_objects: int,
+    max_objects: int,
+    num_images: int,
+
+):
 
     # replace git-bash for "{path_to_git_directory}/Git/bin/sh" in the
     # following command to see more detailed errors
     output = subprocess.run(
         f'"C:\\Program Files\\Git\\bin\\sh" -i -c "blender --python \
         image_generation/render_images_partnet.py --background -- \
-        --min_objects {args.min_objects} \
-        --max_objects {args.max_objects} \
+        --min_objects {min_objects} \
+        --max_objects {max_objects} \
         --min_dist {args.min_objects} \
         --margin {args.margin} \
         --margin2 {args.margin2} \
         --min_pixels_per_object {args.min_pixels_per_object} \
         --max_retries {args.max_retries} \
         --start_idx {args.start_idx} \
-        --num_images {args.num_images} \
+        --num_images {num_images} \
         --filename_prefix {args.filename_prefix} \
         --split {args.split} \
-        --output_image_dir {folder_structure.image_dir.absolute().as_posix()} \
-        --output_scene_dir {folder_structure.scene_dir.absolute().as_posix()} \
-        --output_depth_dir {folder_structure.depth_dir.absolute().as_posix()} \
-        --output_scene_file {folder_structure.scene_file.absolute().as_posix()}\
-        --output_blend_dir {folder_structure.blend_dir.absolute().as_posix()} \
+        --output_image_dir {folder_structure.image_dir.as_posix()} \
+        --output_scene_dir {folder_structure.scene_dir.as_posix()} \
+        --output_depth_dir {folder_structure.depth_dir.as_posix()} \
+        --output_scene_file {folder_structure.scene_file.as_posix()}\
+        --output_blend_dir {folder_structure.blend_dir.as_posix()} \
         --save_blendfiles {args.save_blendfiles} \
         --version {args.version} \
         --date {args.date} \
@@ -145,12 +153,12 @@ def generate_images(folder_structure: FolderStructure, args):
 def generate_questions(folder_structure: FolderStructure, args):
     output = subprocess.run(
         f'python question_generation/generate_questions_partnet.py \
-        --input_scene_files {folder_structure.scene_dir.absolute().as_posix()} \
+        --input_scene_files {folder_structure.scene_dir.as_posix()} \
         --metadata_file {args.metadata_file} \
         --synonyms_json {args.synonyms_json} \
         --template_dir {args.template_dir} \
-        --output_dir {folder_structure.root.absolute().as_posix()} \
-        --output_questions_file {folder_structure.question_file.absolute().as_posix()} \
+        --output_dir {folder_structure.root.as_posix()} \
+        --output_questions_file {folder_structure.question_file.as_posix()} \
         --scene_start_idx {args.scene_start_idx} \
         --num_scenes {args.num_scenes} \
         --templates_per_image {args.templates_per_image} \
@@ -419,9 +427,15 @@ def main_loop(args):
     creator = FolderCreator(root_folder)
     creator.create_file_structure()
 
-    print(f"\nOutputfolder: {creator.structure.root.absolute()}\n")
+    print(f"\nOutputfolder: {creator.structure.root}\n")
 
-    image_output = generate_images(creator.structure, args)
+    image_output = generate_images(
+        args=args,
+        folder_structure=creator.structure,
+        min_objects=args.min_objects,
+        max_objects=args.max_objects,
+        num_images=args.num_images,
+    )
     question_output = generate_questions(creator.structure, args)
 
     return image_output, question_output
