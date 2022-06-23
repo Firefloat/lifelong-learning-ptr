@@ -8,6 +8,7 @@ IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
 IMAGE_DATA_DIR = IMAGE_DIR / 'data'
 IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = pathlib.Path(__file__).parent
+_NO_DIR = object()
 
 
 class FolderStructure:
@@ -47,7 +48,15 @@ class FolderStructure:
 class FolderCreator:
 
     def __init__(self, root_dir) -> None:
+
+        if root_dir is _NO_DIR:
+            root_dir = ROOT_DIR / 'out'
+            root_dir.mkdir(exist_ok=True)
+            n = type(self).get_output_number(root_dir)
+            root_dir = root_dir / f'run_{n}'
+
         root_dir = pathlib.Path(root_dir)
+
         self._folder_structure = FolderStructure(root_dir)
         self._folder_structure.root.mkdir(parents=True, exist_ok=True)
 
@@ -59,6 +68,15 @@ class FolderCreator:
             raise RuntimeError(
                 f"Output directory {self.structure.root} is not empty!"
             )
+
+    @staticmethod
+    def get_output_number(dir: pathlib.Path) -> int:
+        nums = [
+            int(str(d).split('_')[1]) for d in dir.iterdir()
+            if str(d).split('_')[1].isnumeric()
+        ]
+        nums = sorted(nums)
+        return nums[-1] + 1
 
     @property
     def structure(self) -> FolderStructure:
@@ -147,7 +165,7 @@ def parse_args():
     # Input options
     parser.add_argument(
         '--out',
-        default=str(ROOT_DIR / f'out_{dt.now().timestamp()}'),
+        default=_NO_DIR,
         help='Directory for all the outputs'
     )
     parser.add_argument(
