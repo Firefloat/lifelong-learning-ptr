@@ -127,6 +127,21 @@ def run_subprocess(command):
         process.kill()
 
 
+def get_bash_prefix(args) -> str:
+    bash_prefix = ''
+
+    if is_windows():
+        git_bash_path = pathlib.Path(args.bash_path)
+        if not git_bash_path.exists():
+            raise FileNotFoundError(
+                f"Git bash could not be found in path {git_bash_path}"
+            )
+
+        bash_prefix = f'"{str(git_bash_path)}" -i -c "'
+
+    return bash_prefix
+
+
 def generate_images(
     *,
     args,
@@ -137,9 +152,7 @@ def generate_images(
 
 ) -> None:
 
-    bash_prefix = ''
-    if is_windows():
-        bash_prefix = '"C:\\Program Files\\Git\\bin\\sh" -i -c "'
+    bash_prefix = get_bash_prefix(args)
 
     run_subprocess(
         f'{bash_prefix}blender --python \
@@ -245,6 +258,11 @@ def parse_args():
         '--out',
         default=_NO_DIR,
         help='Directory for all the outputs'
+    )
+    parser.add_argument(
+        '--bash_path',
+        default=pathlib.Path("C:/Program Files/Git/bin/sh.exe"),
+        help='Only for Windows systems, path to the git-bash'
     )
     parser.add_argument(
         '--base_scene_blendfile',
