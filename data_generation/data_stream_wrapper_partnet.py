@@ -1,7 +1,9 @@
 import argparse
 from datetime import datetime as dt
 import pathlib
+from signal import signal, SIGINT
 import subprocess
+import sys
 
 
 IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
@@ -94,7 +96,27 @@ class FolderCreator:
         self.structure.blend_dir.mkdir()
 
 
-# image generation arguments
+def run_subprocess(command):
+
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        shell=True,
+    )
+
+    def kill_proc(signal_received, frame):
+        print("CTRL-C detected, exiting gracefully")
+        process.kill()
+        exit(0)
+
+    try:
+        signal(SIGINT, kill_proc)
+        for line in iter(lambda: process.stdout.readline(), b""):
+            sys.stdout.write(line.decode('utf-8'))
+    except Exception:
+        process.kill()
+
 
 def generate_images(
     *,
@@ -104,11 +126,11 @@ def generate_images(
     max_objects: int,
     num_images: int,
 
-):
+) -> None:
 
     # replace git-bash for "{path_to_git_directory}/Git/bin/sh" in the
     # following command to see more detailed errors
-    output = subprocess.run(
+    run_subprocess(
         f'"C:\\Program Files\\Git\\bin\\sh" -i -c "blender --python \
         image_generation/render_images_partnet.py --background -- \
         --min_objects {min_objects} \
@@ -142,12 +164,8 @@ def generate_images(
         --render_max_bounces {args.render_max_bounces} \
         --render_tile_size {args.render_tile_size} \
         --data_dir {args.data_dir} \
-        --mobility_dir {args.mobility_dir}',
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True
+        --mobility_dir {args.mobility_dir}'
     )
-    return output
 
 
 def generate_questions(
@@ -156,8 +174,8 @@ def generate_questions(
     folder_structure: FolderStructure,
     instances_per_template: int,
     template_types: str,
-):
-    output = subprocess.run(
+) -> None:
+    run_subprocess(
         f'python question_generation/generate_questions_partnet.py \
         --input_scene_files {folder_structure.scene_dir.as_posix()} \
         --metadata_file {args.metadata_file} \
@@ -171,11 +189,8 @@ def generate_questions(
         --instances_per_template {instances_per_template} \
         --template_types {template_types} \
         --reset_counts_every {args.reset_counts_every}',
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True
+
     )
-    return output
 
 
 def parse_args():
@@ -454,11 +469,7 @@ def main_loop(args):
 
 def main():
     args = parse_args()
-
-    image_output, question_output = main_loop(args)
-
-    print('\n####IMAGE GENERATION OUTPUT \n ', image_output)
-    print('\n####QUESTION GENERATION OUTPUT \n ', question_output)
+    main_loop(args)
 
 
 if __name__ == '__main__':
