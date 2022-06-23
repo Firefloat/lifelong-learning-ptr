@@ -412,18 +412,27 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main_loop(args):
     args = parse_args()
     root_folder = assert_root_folder(args.out)
+
     creator = FolderCreator(root_folder)
     creator.create_file_structure()
 
     print(f"\nOutputfolder: {creator.structure.root.absolute()}\n")
 
     image_output = generate_images(creator.structure, args)
-    print('\n####IMAGE GENERATION OUTPUT \n ', image_output)
-
     question_output = generate_questions(creator.structure, args)
+
+    return image_output, question_output
+
+
+def main():
+    args = parse_args()
+
+    image_output, question_output = main_loop(args)
+
+    print('\n####IMAGE GENERATION OUTPUT \n ', image_output)
     print('\n####QUESTION GENERATION OUTPUT \n ', question_output)
 
 
