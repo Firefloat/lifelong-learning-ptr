@@ -150,7 +150,13 @@ def generate_images(
     return output
 
 
-def generate_questions(folder_structure: FolderStructure, args):
+def generate_questions(
+    *,
+    args,
+    folder_structure: FolderStructure,
+    instances_per_template: int,
+    template_types: str,
+):
     output = subprocess.run(
         f'python question_generation/generate_questions_partnet.py \
         --input_scene_files {folder_structure.scene_dir.as_posix()} \
@@ -162,8 +168,8 @@ def generate_questions(folder_structure: FolderStructure, args):
         --scene_start_idx {args.scene_start_idx} \
         --num_scenes {args.num_scenes} \
         --templates_per_image {args.templates_per_image} \
-        --instances_per_template {args.instances_per_template} \
-        --template_types {args.template_types} \
+        --instances_per_template {instances_per_template} \
+        --template_types {template_types} \
         --reset_counts_every {args.reset_counts_every}',
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -436,7 +442,12 @@ def main_loop(args):
         max_objects=args.max_objects,
         num_images=args.num_images,
     )
-    question_output = generate_questions(creator.structure, args)
+    question_output = generate_questions(
+        args=args,
+        folder_structure=creator.structure,
+        instances_per_template=args.instances_per_template,
+        template_types=args.template_types,
+    )
 
     return image_output, question_output
 
