@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime as dt
 import pathlib
+import random
 from signal import signal, SIGINT
 import subprocess
 import sys
@@ -554,10 +555,6 @@ def parse_args():
                             "on each image")
     parser.add_argument('--instances_per_template', default=1, type=int,
                         help="The number of times each template should be instantiated on an image")
-
-    # Control what kind type of templates to use
-    parser.add_argument('--template_types', default='*',
-                        help='The types of templates to be used as a comma-separated list. * means use all')
 
     # Misc
     parser.add_argument('--reset_counts_every', default=6000, type=int,
