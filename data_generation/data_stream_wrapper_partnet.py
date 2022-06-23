@@ -57,17 +57,17 @@ class FolderCreator:
 
         root_dir = pathlib.Path(root_dir)
 
-        self._folder_structure = FolderStructure(root_dir)
-        self._folder_structure.root.mkdir(parents=True, exist_ok=True)
-
-        if self._folder_structure.root.is_file():
+        if root_dir.is_file():
             raise RuntimeError(
                 f"Output directory {self.structure.root} is a file!"
             )
-        elif any(self._folder_structure.root.iterdir()):
+        elif any(root_dir.iterdir()):
             raise RuntimeError(
                 f"Output directory {self.structure.root} is not empty!"
             )
+
+        self._folder_structure = FolderStructure(root_dir)
+        self._folder_structure.root.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
     def get_output_number(dir: pathlib.Path) -> int:
