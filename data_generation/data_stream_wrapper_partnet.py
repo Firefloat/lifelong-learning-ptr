@@ -1,5 +1,6 @@
 import argparse
 from datetime import datetime as dt
+import os
 import pathlib
 from signal import signal, SIGINT
 import subprocess
@@ -58,6 +59,10 @@ def get_folder_number(dir: pathlib.Path) -> int:
         return 0
 
     return nums[-1] + 1
+
+
+def is_windows() -> bool:
+    return 'win' in sys.platform
 
 
 def assert_root_folder(arg_path) -> pathlib.Path:
@@ -133,10 +138,12 @@ def generate_images(
 
 ) -> None:
 
-    # replace git-bash for "{path_to_git_directory}/Git/bin/sh" in the
-    # following command to see more detailed errors
+    bash_prefix = ''
+    if is_windows():
+        bash_prefix = '"C:\\Program Files\\Git\\bin\\sh" -i -c "'
+
     run_subprocess(
-        f'"C:\\Program Files\\Git\\bin\\sh" -i -c "blender --python \
+        f'{bash_prefix}blender --python \
         image_generation/render_images_partnet.py --background -- \
         --min_objects {min_objects} \
         --max_objects {max_objects} \
