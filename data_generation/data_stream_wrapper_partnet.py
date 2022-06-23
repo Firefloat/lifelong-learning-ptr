@@ -45,15 +45,29 @@ class FolderStructure:
         return self.root / 'questions.json'
 
 
+def get_folder_number(dir: pathlib.Path) -> int:
+    nums = [
+        int(str(d).split('_')[1]) for d in dir.iterdir()
+        if str(d).split('_')[1].isnumeric()
+    ]
+    nums = sorted(nums)
+    return nums[-1] + 1
+
+
+def assert_root_folder(arg_path) -> pathlib.Path:
+    if arg_path is _NO_DIR:
+        arg_path = ROOT_DIR / 'out'
+        arg_path.mkdir(exist_ok=True)
+        directory_number = get_folder_number(arg_path)
+        arg_path = arg_path / f'run_{directory_number}'
+
+    arg_path.mkdir(parents=True, exist_ok=True)
+    return arg_path
+
+
 class FolderCreator:
 
     def __init__(self, root_dir) -> None:
-
-        if root_dir is _NO_DIR:
-            root_dir = ROOT_DIR / 'out'
-            root_dir.mkdir(exist_ok=True)
-            n = type(self).get_output_number(root_dir)
-            root_dir = root_dir / f'run_{n}'
 
         root_dir = pathlib.Path(root_dir)
 
@@ -68,15 +82,6 @@ class FolderCreator:
 
         self._folder_structure = FolderStructure(root_dir)
         self._folder_structure.root.mkdir(parents=True, exist_ok=True)
-
-    @staticmethod
-    def get_output_number(dir: pathlib.Path) -> int:
-        nums = [
-            int(str(d).split('_')[1]) for d in dir.iterdir()
-            if str(d).split('_')[1].isnumeric()
-        ]
-        nums = sorted(nums)
-        return nums[-1] + 1
 
     @property
     def structure(self) -> FolderStructure:
@@ -409,7 +414,8 @@ def parse_args():
 
 def main():
     args = parse_args()
-    creator = FolderCreator(args.out)
+    root_folder = assert_root_folder(args.out)
+    creator = FolderCreator(root_folder)
     creator.create_file_structure()
 
     print(f"\nOutputfolder: {creator.structure.root.absolute()}\n")
