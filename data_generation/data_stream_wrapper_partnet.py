@@ -110,7 +110,8 @@ def assert_root_folder(arg_path) -> pathlib.Path:
         arg_path.mkdir(exist_ok=True)
         directory_number = get_folder_number(arg_path)
         arg_path = arg_path / f'run_{directory_number}'
-
+    else:
+        arg_path = pathlib.Path(arg_path)
     arg_path.mkdir(parents=True, exist_ok=True)
     return arg_path
 
