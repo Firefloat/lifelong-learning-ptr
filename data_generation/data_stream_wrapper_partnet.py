@@ -339,7 +339,7 @@ def main_loop(args) -> None:
             num_images = random.randint(min_images, max_images)
 
         print(
-            f"Creating {num_images} images and questions for '{template_type}'"
+            f"Creating questions and {num_images} images for '{template_type}'"
         )
 
         print("Generating output images, this can take a while...")
