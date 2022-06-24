@@ -7,6 +7,10 @@ import signal
 import subprocess
 import sys
 
+assert (3, 8) > sys.version_info, (
+    f"Cannot run this module on python version {sys.version}, this script "
+    f"requires Python 3.8+"
+)
 
 IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
 IMAGE_DATA_DIR = IMAGE_DIR / 'data'
