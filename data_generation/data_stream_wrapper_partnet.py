@@ -1,5 +1,6 @@
 import argparse
 from datetime import datetime as dt
+import collections
 import os
 import pathlib
 import random
@@ -7,27 +8,30 @@ import signal
 import subprocess
 import sys
 
-assert (3, 8) > sys.version_info, (
+assert (3, 6) < sys.version_info, (
     f"Cannot run this module on python version {sys.version}, this script "
-    f"requires Python 3.8+"
+    f"requires Python 3.6+"
 )
 
 IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
 IMAGE_DATA_DIR = IMAGE_DIR / 'data'
 IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = pathlib.Path(__file__).parent
-TEMPLATE_ORDER = [
-    'single_object',
-    'what_question',
-    'zero_hop',
-    'one_hop',
-    'same_relate',
-    'comparison',
-    'geometry',
-    'analogy',
-    'arithmetic',
-    'physics',
-]
+TEMPLATE_ORDER = collections.OrderedDict(
+    {
+        'single_object': {'min_objects': 1, 'max_objects': 1},
+        'what_question': {'min_objects': 1, 'max_objects': 1},
+        'zero_hop': {},
+        'one_hop': {},
+        'same_relate': {},
+        'comparison': {},
+        'geometry': {},
+        'analogy': {},
+        'arithmetic': {},
+        'physics': {},
+    }
+)
+
 _NO_DIR = object()
 
 
@@ -314,7 +318,7 @@ def main_loop(args) -> None:
 
     root_folder = assert_root_folder(args.out)
 
-    for index, template_type in enumerate(TEMPLATE_ORDER):
+    for index, (template_type, settings) in enumerate(TEMPLATE_ORDER.items()):
 
         creator = FolderCreator(root_folder / f"{index + 1}_{template_type}")
         creator.create_file_structure()
