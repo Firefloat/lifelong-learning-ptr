@@ -160,7 +160,7 @@ def run_subprocess(command: str):
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        # shell=True,
+        shell=True,
     )
 
     def kill_proc(signal_received, frame):
