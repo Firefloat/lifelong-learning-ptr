@@ -390,7 +390,7 @@ def parse_args():
         '--max_images_per_iter',
         default=5,
         type=int,
-        help='Maximum of images that are craeted for each learning iteration'
+        help='Maximum of images that are created for each learning iteration'
     )
 
     # ******************* Options used in Image Generation *******************
