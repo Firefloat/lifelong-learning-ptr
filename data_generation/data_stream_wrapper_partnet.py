@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime as dt
 import pathlib
+import random
 from signal import signal, SIGINT
 import subprocess
 import sys
@@ -287,15 +288,32 @@ def generate_questions(
 def main_loop(args) -> None:
     args = parse_args()
     bash_prefix = get_bash_prefix(args.bash_path)
+
+    min_images = int(args.min_images_per_iter)
+    max_images = int(args.max_images_per_iter)
+    if min_images > max_images:
+        raise AttributeError(
+            f"min_images_per_iter({min_images}) cannot be smaller than "
+            f"max_images_per_iter({max_images})!"
+        )
+
     root_folder = assert_root_folder(args.out)
 
     for index, template_type in enumerate(TEMPLATE_ORDER):
-        print(f"Creating images and questions for '{template_type}'")
 
         creator = FolderCreator(root_folder / f"{index + 1}_{template_type}")
         creator.create_file_structure()
 
         print(f"\nOutputfolder for current run: {creator.structure.root}\n")
+
+        if min_images == max_images:
+            num_images = min_images
+        else:
+            num_images = random.randint(min_images, max_images)
+
+        print(
+            f"Creating {num_images} images and questions for '{template_type}'"
+        )
 
         print("Generating output images, this can take a while...")
         generate_images(
@@ -304,7 +322,7 @@ def main_loop(args) -> None:
             folder_structure=creator.structure,
             min_objects=args.min_objects,
             max_objects=args.max_objects,
-            num_images=args.num_images,
+            num_images=num_images,
         )
 
         print("Generating questions")
@@ -334,6 +352,18 @@ def parse_args():
         '--bash_path',
         default=pathlib.Path("C:/Program Files/Git/bin/sh.exe"),
         help='Only for Windows systems, path to the git-bash'
+    )
+    parser.add_argument(
+        '--min_images_per_iter',
+        default=1,
+        type=int,
+        help='Minimum of images that are created for each learning iteration'
+    )
+    parser.add_argument(
+        '--max_images_per_iter',
+        default=5,
+        type=int,
+        help='Maximum of images that are craeted for each learning iteration'
     )
 
     # ******************* Options used in Image Generation *******************
