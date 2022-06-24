@@ -6,9 +6,36 @@ Go to [this](https://download.blender.org/release/Blender2.79/) webpage and down
 
 Unzip the `.zip` in any location you want. Check if blender works by simply double-clicking the `blender.exe` within the unzipped folder.
 
-## Install pip
+# Install Pybullet
 
->**NOTE:** If you also want to run the `render_images_physics.py` script, go to the **Install pybullet** section first. Because you need to reinstall the python version.
+> **NOTE**: Installing Pybullet is only necessary if you want to use the physics part of the PTR image generation. If you don't want to use that you can continue with [Installing pip](#install-pip)
+
+1. Download the [Windows x86-64 executable installer](https://www.python.org/downloads/release/python-353/). This needs to be done because the standard blender python version does not come with the necessary header files attached.
+
+2. Rename your python folder within the blender installation path, e.g. within `..\blender-2.79b-windows64\blender-2.79b-windows64\2.79` should be located a folder named `python`. Simply rename it to `python_bak`
+
+3. Execute the Python executable that you downloaded in step `1`. 
+
+   1. Uncheck `add to path`
+   2. Check only `install precompiled standard libaries` and `install pip`
+   3. **IMPORTANT:** do not choose the default location, but rather modify the installation path to be within your `blender/2.79/` folder, e.g. `..\blender-2.79b-windows64\blender-2.79b-windows64\2.79\python` (you need to create the `python` folder by yourself). This enables us to use that python version within blender.
+
+4. Move to the installation `python` folder, there you should find a `python.exe`. Run the following command:
+
+```shell
+python.exe -m pip install pybullet
+```
+
+5. If you get no error -> good. If you get an error follow step 6.
+6. If your error has something to do with C++ versions, please install the correct version through Visual Studio Installer
+7. If you get an error `rc.exe` not found you need to go to the folder `C:\Program Files (x86)\Windows Kits` and search in all folders for the `rc.exe`
+8. Add the folder with the `rc.exe` to your path and restart the console
+9. You should be good to go and can install also numpy and pillow with the above command.
+
+
+# Install pip
+
+>**NOTE:** If you have already done the steps in [Install Pybullet](#install-pybullet) pip should already be installed in the bleder python version and you can continue with [Install dependencies](#install-dependencies).
 
 Blender 2.79x does come with a Python 3.5 interpreter which will invoke the scripts that are used in this project. One of the pitfalls is that the interpreter does not come with `pip` which makes installing third party libraries impossible.
 
@@ -59,28 +86,3 @@ The last flag `--use_gpu 1` enables blender to run on your gpu. This only works 
 
 
 python generate_questions_partnet.py --input_scene_files ../output/scenes/ --output_dir out/ --output_questions_file out/PARTNET_questions.json
-
-
-# Install Pybullet
-
-1. Download the [Windows x86-64 executable installer](https://www.python.org/downloads/release/python-353/). This needs to be done because the standard blender python version does not come with the necessary header files attached.
-
-2. Rename your python folder within the blender installation path, e.g. within `..\blender-2.79b-windows64\blender-2.79b-windows64\2.79` should be located a folder named `python`. Simply rename it to `python_bak`
-
-3. Execute the Python executable that you downloaded in step `1`. 
-
-   1. **IMPORTANT:** do not choose the default location, but rather modify the installation path to be within your `blender/2.79/` folder, e.g. `..\blender-2.79b-windows64\blender-2.79b-windows64\2.79\python` (you need to create the `python` folder by yourself). This enables us to use that python version within blender.
-   2. Uncheck `add to path`
-   3. Check only `install precompiled standard libaries`
-
-4. Move to the installation `python` folder, there you should find a `python.exe`. Run the following command:
-
-```shell
-python.exe -m pip install pybullet
-```
-
-5. If you get no error -> good. If you get an error follow step 6.
-6. If your error has something to do with C++ versions, please install the correct version through Visual Studio Installer
-7. If you get an error `rc.exe` not found you need to go to the folder `C:\Program Files (x86)\Windows Kits` and search in all folders for the `rc.exe`
-8. Add the folder with the `rc.exe` to your path and restart the console
-9. You should be good to go and can install also numpy and pillow with the above command.
