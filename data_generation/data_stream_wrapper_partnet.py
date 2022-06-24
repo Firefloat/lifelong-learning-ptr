@@ -432,12 +432,6 @@ def parse_args():
              "later."
     )
     parser.add_argument(
-        '--num_images',
-        default=5,
-        type=int,
-        help="The number of images to render"
-    )
-    parser.add_argument(
         '--filename_prefix',
         default='PTR',
         help="This prefix will be prepended to the rendered images and JSON "
