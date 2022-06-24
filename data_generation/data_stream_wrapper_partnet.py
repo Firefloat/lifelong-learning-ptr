@@ -336,22 +336,6 @@ def parse_args():
         default=pathlib.Path("C:/Program Files/Git/bin/sh.exe"),
         help='Only for Windows systems, path to the git-bash'
     )
-    parser.add_argument(
-        '--base_scene_blendfile',
-        default=str(IMAGE_DIR / 'base_scene.blend'),
-        help="Base blender file on which all scenes are based; includes " +
-             "ground plane, lights, and camera."
-    )
-    parser.add_argument(
-        '--properties_json',
-        default=str(IMAGE_DATA_DIR / 'properties_partnet.json')
-    )
-    parser.add_argument('--tmp_dir', default=str(IMAGE_DIR / 'tmp9'))
-    parser.add_argument(
-        '--material_dir',
-        default=str(IMAGE_DIR / 'materials'),
-        help="Directory where .blend files for materials are stored"
-    )
     # Settings for objects
     parser.add_argument(
         '--min_objects',
@@ -364,12 +348,6 @@ def parse_args():
         default=6,
         type=int,
         help="The maximum number of objects to place in each scene"
-    )
-    parser.add_argument(
-        '--min_dist',
-        default=0.25,
-        type=float,
-        help="The minimum allowed distance between object centers"
     )
     parser.add_argument(
         '--margin',
@@ -562,12 +540,6 @@ def parse_args():
                         help="How often to reset template and answer counts. Higher values will " +
                             "result in flatter distributions over templates and answers, but " +
                             "will result in longer runtimes.")
-    parser.add_argument('--verbose', action='store_true',
-                        help="Print more verbose output")
-    parser.add_argument('--time_dfs', action='store_true',
-                        help="Time each depth-first search; must be given with --verbose")
-    parser.add_argument('--profile', action='store_true',
-                        help="If given then run inside cProfile")
     return parser.parse_args()
 
 
