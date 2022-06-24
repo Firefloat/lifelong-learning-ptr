@@ -1,7 +1,6 @@
 import argparse
 from datetime import datetime as dt
 import pathlib
-import random
 from signal import signal, SIGINT
 import subprocess
 import sys
@@ -63,7 +62,7 @@ class FolderStructure:
 
 def get_folder_number(dir: pathlib.Path) -> int:
     """Gets an incremental number for a folder, depending on how the other
-    folders are numbered, e.g. if a folder A contains the folders run_1 and 
+    folders are numbered, e.g. if a folder A contains the folders run_1 and
     run_2 the call to this function with get_folder_number(A) will return 3.
 
     Parameters
@@ -336,6 +335,7 @@ def parse_args():
         default=pathlib.Path("C:/Program Files/Git/bin/sh.exe"),
         help='Only for Windows systems, path to the git-bash'
     )
+
     # Settings for objects
     parser.add_argument(
         '--min_objects',
@@ -353,32 +353,32 @@ def parse_args():
         '--margin',
         default=1.5,
         type=float,
-        help="Along all cardinal directions (left, right, front, back), all " +
-             "objects will be at least this distance apart. This makes resolving " +
-             "spatial relationships slightly less ambiguous."
+        help="Along all cardinal directions (left, right, front, back), all "
+             "objects will be at least this distance apart. This makes "
+             "resolving spatial relationships slightly less ambiguous."
     )
     parser.add_argument(
         '--margin2',
         default=8,
         type=float,
-        help="Along all cardinal directions (left, right, front, back), all " +
-             "objects will be at least this distance apart. This makes resolving " +
-             "spatial relationships slightly less ambiguous."
+        help="Along all cardinal directions (left, right, front, back), all "
+             "objects will be at least this distance apart. This makes "
+             "resolving spatial relationships slightly less ambiguous."
     )
     parser.add_argument(
         '--min_pixels_per_object',
         default=200,
         type=int,
-        help="All objects will have at least this many visible pixels in the " +
-             "final rendered images; this ensures that no objects are fully " +
-             "occluded by other objects."
+        help="All objects will have at least this many visible pixels in "
+             "the final rendered images; this ensures that no objects are "
+             "fully occluded by other objects."
     )
     parser.add_argument(
         '--max_retries',
         default=20000,
         type=int,
-        help="The number of times to try placing an object before giving up and " +
-             "re-placing all objects in the scene."
+        help="The number of times to try placing an object before giving up "
+             "and re-placing all objects in the scene."
     )
 
     # Output settings
@@ -386,9 +386,10 @@ def parse_args():
         '--start_idx',
         default=0,
         type=int,
-        help="The index at which to start for numbering rendered images. Setting " +
-             "this to non-zero values allows you to distribute rendering across " +
-             "multiple machines and recombine the results later."
+        help="The index at which to start for numbering rendered images. "
+             "Setting this to non-zero values allows you to distribute "
+             "rendering across multiple machines and recombine the results "
+             "later."
     )
     parser.add_argument(
         '--num_images',
@@ -399,39 +400,42 @@ def parse_args():
     parser.add_argument(
         '--filename_prefix',
         default='PTR',
-        help="This prefix will be prepended to the rendered images and JSON scenes"
+        help="This prefix will be prepended to the rendered images and JSON "
+             "scenes"
     )
     parser.add_argument(
         '--split',
         default='new',
-        help="Name of the split for which we are rendering. This will be added to " +
-             "the names of rendered images, and will also be stored in the JSON " +
-             "scene structure for each image."
+        help="Name of the split for which we are rendering. This will be "
+             "added to the names of rendered images, and will also be stored "
+             "in the JSON scene structure for each image."
     )
     parser.add_argument(
         '--save_blendfiles',
         type=int,
         default=0,
-        help="Setting --save_blendfiles 1 will cause the blender scene file for " +
-             "each generated image to be stored in the directory specified by " +
-             "the --output_blend_dir flag. These files are not saved by default " +
-             "because they take up ~5-10MB each."
+        help="Setting --save_blendfiles 1 will cause the blender scene file "
+             "for each generated image to be stored in the directory "
+             "specified by the --output_blend_dir flag. These files are not "
+             "saved by default because they take up ~5-10MB each."
     )
     parser.add_argument(
         '--version',
         default='1.0',
-        help="String to store in the \"version\" field of the generated JSON file"
+        help="String to store in the \"version\" field of the generated JSON "
+             "file"
     )
     parser.add_argument(
         '--license',
         default="Creative Commons Attribution (CC-BY 4.0)",
-        help="String to store in the \"license\" field of the generated JSON file"
+        help="String to store in the \"license\" field of the generated JSON "
+             "file"
     )
     parser.add_argument(
         '--date',
         default=dt.today().strftime("%m/%d/%Y"),
-        help="String to store in the \"date\" field of the generated JSON file; " +
-             "defaults to today's date"
+        help="String to store in the \"date\" field of the generated JSON "
+             "file; defaults to today's date"
     )
 
     # Rendering options
@@ -439,9 +443,9 @@ def parse_args():
         '--use_gpu',
         default=1,
         type=int,
-        help="Setting --use_gpu 1 enables GPU-accelerated rendering using CUDA. " +
-             "You must have an NVIDIA GPU with the CUDA toolkit installed for " +
-             "to work."
+        help="Setting --use_gpu 1 enables GPU-accelerated rendering using "
+             "CUDA. You must have an NVIDIA GPU with the CUDA toolkit "
+             "installed for to work."
     )
     parser.add_argument(
         '--width',
@@ -465,13 +469,15 @@ def parse_args():
         '--fill_light_jitter',
         default=1.0,
         type=float,
-        help="The magnitude of random jitter to add to the fill light position."
+        help="The magnitude of random jitter to add to the fill light "
+             "position."
     )
     parser.add_argument(
         '--back_light_jitter',
         default=1.0,
         type=float,
-        help="The magnitude of random jitter to add to the back light position."
+        help="The magnitude of random jitter to add to the back light "
+             "position."
     )
     parser.add_argument(
         '--camera_jitter',
@@ -483,8 +489,9 @@ def parse_args():
         '--render_num_samples',
         default=512,
         type=int,
-        help="The number of samples to use when rendering. Larger values will " +
-            "result in nicer images but will cause rendering to take longer."
+        help="The number of samples to use when rendering. Larger values "
+             "will result in nicer images but will cause rendering to take "
+             "longer."
     )
     parser.add_argument(
         '--render_min_bounces',
@@ -502,44 +509,83 @@ def parse_args():
         '--render_tile_size',
         default=256,
         type=int,
-        help="The tile size to use for rendering. This should not affect the " +
-             "quality of the rendered image but may affect the speed; CPU-based " +
-             "rendering may achieve better performance using smaller tile sizes " +
-             "while larger tile sizes may be optimal for GPU-based rendering."
+        help="The tile size to use for rendering. This should not affect "
+             "the quality of the rendered image but may affect the speed; "
+             "CPU-based rendering may achieve better performance using "
+             "smaller tile sizes while larger tile sizes may be optimal for "
+             "GPU-based rendering."
     )
 
-    parser.add_argument('--data_dir', default=str(IMAGE_DIR / 'data_v0'), type=str)
-    parser.add_argument('--mobility_dir', default=str(IMAGE_DIR / 'cart'), type=str)
+    parser.add_argument(
+        '--data_dir',
+        default=str(IMAGE_DIR / 'data_v0'),
+        type=str
+    )
+    parser.add_argument(
+        '--mobility_dir',
+        default=str(IMAGE_DIR / 'cart'),
+        type=str
+    )
 
     # question generation arguments
-    parser.add_argument('--metadata_file', default='question_generation/metadata_partnet.json',
-                        help="JSON file containing metadata about functions")
-    parser.add_argument('--synonyms_json', default='question_generation/synonyms.json',
-                        help="JSON file defining synonyms for parameter values")
-    parser.add_argument('--template_dir', default='question_generation/PARTNET_templates',
-                        help="Directory containing JSON templates for questions")
+    parser.add_argument(
+        '--metadata_file',
+        default='question_generation/metadata_partnet.json',
+        help="JSON file containing metadata about functions"
+    )
+    parser.add_argument(
+        '--synonyms_json',
+        default='question_generation/synonyms.json',
+        help="JSON file defining synonyms for parameter values"
+    )
+    parser.add_argument(
+        '--template_dir',
+        default='question_generation/PARTNET_templates',
+        help="Directory containing JSON templates for questions"
+    )
+
     # Control which and how many images to process
-    parser.add_argument('--scene_start_idx', default=0, type=int,
-                        help="The image at which to start generating questions; this allows " +
-                            "question generation to be split across many workers")
-    parser.add_argument('--num_scenes', default=0, type=int,
-                        help="The number of images for which to generate questions. Setting to 0 " +
-                            "generates questions for all scenes in the input file starting from " +
-                            "--scene_start_idx")
+    parser.add_argument(
+        '--scene_start_idx',
+        default=0,
+        type=int,
+        help="The image at which to start generating questions; this allows "
+             "question generation to be split across many workers"
+    )
+    parser.add_argument(
+        '--num_scenes',
+        default=0,
+        type=int,
+        help="The number of images for which to generate questions. Setting "
+             "to 0 generates questions for all scenes in the input file "
+             "starting from --scene_start_idx"
+    )
 
     # Control the number of questions per image; we will attempt to generate
     # templates_per_image * instances_per_template questions per image.
-    parser.add_argument('--templates_per_image', default=10, type=int,
-                        help="The number of different templates that should be instantiated " +
-                            "on each image")
-    parser.add_argument('--instances_per_template', default=1, type=int,
-                        help="The number of times each template should be instantiated on an image")
+    parser.add_argument(
+        '--templates_per_image',
+        default=10,
+        type=int,
+        help="The number of different templates that should be instantiated "
+             "on each image")
+    parser.add_argument(
+        '--instances_per_template',
+        default=1,
+        type=int,
+        help="The number of times each template should be instantiated on an "
+             "image"
+    )
 
     # Misc
-    parser.add_argument('--reset_counts_every', default=6000, type=int,
-                        help="How often to reset template and answer counts. Higher values will " +
-                            "result in flatter distributions over templates and answers, but " +
-                            "will result in longer runtimes.")
+    parser.add_argument(
+        '--reset_counts_every',
+        default=6000,
+        type=int,
+        help="How often to reset template and answer counts. Higher values "
+             "will result in flatter distributions over templates and "
+             "answers, but will result in longer runtimes."
+    )
     return parser.parse_args()
 
 
