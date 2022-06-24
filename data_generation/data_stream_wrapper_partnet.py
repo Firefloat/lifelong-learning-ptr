@@ -13,14 +13,14 @@ ROOT_DIR = pathlib.Path(__file__).parent
 TEMPLATE_ORDER = [
     'single_object',
     'what_question',
+    'zero_hop',
+    'one_hop',
     'same_relate',
+    'comparison',
+    'geometry',
     'analogy',
     'arithmetic',
     'physics',
-    'comparison',
-    'geometry',
-    'one_hop',
-    'zero_hop',
 ]
 _NO_DIR = object()
 
