@@ -325,7 +325,7 @@ def main_loop(args) -> None:
         # specified. If our settings are empty the user input will be
         # taken.
         template_settings = collections.ChainMap(
-            settings,
+            settings,  # type: ignore
             {'min_objects': args.min_objects, 'max_objects': args.max_objects}
         )
         creator = FolderCreator(root_folder / f"{index + 1}_{template_type}")
