@@ -17,7 +17,7 @@ TEMPLATE_ORDER = [
     'comparison',
     'geometry',
     'one_hop',
-    # 'physics',
+    'physics',
     'same_relate',
     'single_object',
     'what_question',
@@ -77,8 +77,8 @@ def get_folder_number(dir: pathlib.Path) -> int:
         Next number for folder
     """
     nums = [
-        int(str(d).split('_')[1]) for d in dir.iterdir()
-        if str(d).split('_')[1].isnumeric()
+        int(str(d.name).split('_')[1]) for d in dir.iterdir()
+        if str(d.name).split('_')[1].isnumeric()
     ]
     nums = sorted(nums)
 
