@@ -23,7 +23,7 @@ Unzip the `.zip` in any location you want. Check if blender works by simply doub
 4. Move to the installation `python` folder, there you should find a `python.exe`. Run the following command:
 
 ```shell
-python.exe -m pip install pybullet
+python.exe -m pip install numpy pybullet pillow
 ```
 
 5. If you get no error -> good. If you get an error follow step 6.
