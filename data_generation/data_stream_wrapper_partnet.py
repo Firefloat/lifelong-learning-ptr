@@ -1,8 +1,9 @@
 import argparse
 from datetime import datetime as dt
+import os
 import pathlib
 import random
-from signal import signal, SIGINT
+import signal
 import subprocess
 import sys
 
@@ -148,6 +149,14 @@ class FolderCreator:
         self.structure.blend_dir.mkdir()
 
 
+def kill_process(process: subprocess.Popen):
+    """Kills a subprocess depending on the os"""
+    if is_windows():
+        os.kill(process.pid, signal.CTRL_BREAK_EVENT)
+    else:
+        process.kill()
+
+
 def run_subprocess(command: str):
     """Runs a command in a subprocess and prints the output to the current
     console.
@@ -166,16 +175,18 @@ def run_subprocess(command: str):
 
     def kill_proc(signal_received, frame):
         print("CTRL-C detected, exiting gracefully")
-        process.kill()
+        kill_process(process)
         exit(0)
 
-    signal(SIGINT, kill_proc)
+    signal.signal(signal.SIGINT, kill_proc)
 
     try:
         for ln in iter(lambda: process.stdout.readline(), b""):  # type: ignore
             sys.stdout.write(ln.decode('utf-8'))
     except Exception:
-        process.kill()
+        if process.poll() is None:
+            # At this point the process is still running
+            kill_process(process)
 
 
 def get_bash_prefix(bash_path) -> str:
