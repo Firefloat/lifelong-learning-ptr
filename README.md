@@ -17,7 +17,7 @@ Unzip the `.zip` in any location you want. Check if blender works by simply doub
 3. Execute the Python executable that you downloaded in step `1`. 
 
    1. Uncheck `add to path` and check `install pip` click on next
-   2. Check only `install precompiled standard libaries`, `Download debugging symbols`, and `Download debug binaries`
+   2. Check only `install precompiled standard libaries`
    3. **IMPORTANT:** do not choose the default location, but rather modify the installation path to be within your `blender/2.79/` folder, e.g. `..\blender-2.79b-windows64\blender-2.79b-windows64\2.79\python` (you need to create the `python` folder by yourself). This enables us to use that python version within blender.
 
 4. Move to the installation `python` folder, there you should find a `python.exe`. Run the following command:
