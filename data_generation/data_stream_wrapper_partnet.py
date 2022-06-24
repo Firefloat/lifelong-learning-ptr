@@ -215,14 +215,13 @@ def get_bash_prefix(bash_path) -> str:
 def generate_images(
     *,
     args,
+    bash_prefix: str,
     folder_structure: FolderStructure,
     min_objects: int,
     max_objects: int,
     num_images: int,
 
 ) -> None:
-
-    bash_prefix = get_bash_prefix(args.bash_path)
 
     run_subprocess(
         f'{bash_prefix}blender --python \
@@ -288,6 +287,7 @@ def generate_questions(
 
 def main_loop(args) -> None:
     args = parse_args()
+    bash_prefix = get_bash_prefix(args.bash_path)
     root_folder = assert_root_folder(args.out)
 
     for index, template_type in enumerate(TEMPLATE_ORDER):
@@ -301,6 +301,7 @@ def main_loop(args) -> None:
         print("Generating output images, this can take a while...")
         generate_images(
             args=args,
+            bash_prefix=bash_prefix,
             folder_structure=creator.structure,
             min_objects=args.min_objects,
             max_objects=args.max_objects,
