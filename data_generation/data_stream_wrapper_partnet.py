@@ -12,15 +12,15 @@ IMAGE_DATA_DIR = IMAGE_DIR / 'data'
 IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = pathlib.Path(__file__).parent
 TEMPLATE_ORDER = [
+    'single_object',
+    'what_question',
+    'same_relate',
     'analogy',
     'arithmetic',
+    'physics',
     'comparison',
     'geometry',
     'one_hop',
-    'physics',
-    'same_relate',
-    'single_object',
-    'what_question',
     'zero_hop',
 ]
 _NO_DIR = object()
@@ -290,10 +290,10 @@ def main_loop(args) -> None:
     args = parse_args()
     root_folder = assert_root_folder(args.out)
 
-    for template_type in TEMPLATE_ORDER:
+    for index, template_type in enumerate(TEMPLATE_ORDER):
         print(f"Creating images and questions for '{template_type}'")
 
-        creator = FolderCreator(root_folder / template_type)
+        creator = FolderCreator(root_folder / f"{index + 1}_{template_type}")
         creator.create_file_structure()
 
         print(f"\nOutputfolder for current run: {creator.structure.root}\n")
