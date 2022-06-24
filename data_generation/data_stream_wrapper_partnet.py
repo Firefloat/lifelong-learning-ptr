@@ -170,13 +170,12 @@ def run_subprocess(command: str):
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        shell=True,
     )
 
     def kill_proc(signal_received, frame):
         print("CTRL-C detected, exiting gracefully")
         kill_process(process)
-        exit(0)
+        sys.exit(0)
 
     signal.signal(signal.SIGINT, kill_proc)
 
