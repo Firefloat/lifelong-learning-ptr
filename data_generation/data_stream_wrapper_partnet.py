@@ -9,8 +9,8 @@ import subprocess
 import sys
 
 assert (3, 6) < sys.version_info, (
-    f"Cannot run this module on python version {sys.version}, this script "
-    f"requires Python 3.6+"
+    f"Cannot run this module on python version {sys.version}, "
+    "Python 3.6+ required"
 )
 
 IMAGE_DIR = pathlib.Path(__file__).parent / 'image_generation'
@@ -319,7 +319,15 @@ def main_loop(args) -> None:
     root_folder = assert_root_folder(args.out)
 
     for index, (template_type, settings) in enumerate(TEMPLATE_ORDER.items()):
-
+        # If the settings from our config are filled, we prefer them over the
+        # user input, e.g. in the case of single_object question we always
+        # want to create a single object independent on what the user
+        # specified. If our settings are empty the user input will be
+        # taken.
+        template_settings = collections.ChainMap(
+            settings,
+            {'min_objects': args.min_objects, 'max_objects': args.max_objects}
+        )
         creator = FolderCreator(root_folder / f"{index + 1}_{template_type}")
         creator.create_file_structure()
 
@@ -339,8 +347,8 @@ def main_loop(args) -> None:
             args=args,
             bash_prefix=bash_prefix,
             folder_structure=creator.structure,
-            min_objects=args.min_objects,
-            max_objects=args.max_objects,
+            min_objects=template_settings['min_objects'],
+            max_objects=template_settings['max_objects'],
             num_images=num_images,
         )
 

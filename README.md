@@ -99,7 +99,7 @@ TODO
 
 example for windows:
 ```shell
-python data_stream_wrapper_partnet.py --data_dir D:/Datasets/data_v0 --mobility_dir D:/Datasets/dataset --use_gpu 1 --min_objects 1 --max_objects 1 --instances_per_template 15
+python data_stream_wrapper_partnet.py --data_dir D:/Datasets/data_v0 --mobility_dir D:/Datasets/dataset --use_gpu 1 --instances_per_template 15
 ```
 
 example for Linux:
