@@ -324,7 +324,7 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    # Input options
+    # ******************* Options used in this script *******************
     parser.add_argument(
         '--out',
         default=_NO_DIR,
@@ -336,7 +336,7 @@ def parse_args():
         help='Only for Windows systems, path to the git-bash'
     )
 
-    # Settings for objects
+    # ******************* Options used in Image Generation *******************
     parser.add_argument(
         '--min_objects',
         default=3,
@@ -380,8 +380,6 @@ def parse_args():
         help="The number of times to try placing an object before giving up "
              "and re-placing all objects in the scene."
     )
-
-    # Output settings
     parser.add_argument(
         '--start_idx',
         default=0,
@@ -438,7 +436,7 @@ def parse_args():
              "file; defaults to today's date"
     )
 
-    # Rendering options
+    # ******************* Blender Options *******************
     parser.add_argument(
         '--use_gpu',
         default=1,
@@ -527,7 +525,7 @@ def parse_args():
         type=str
     )
 
-    # question generation arguments
+    # ******************* Options for Question Generation *******************
     parser.add_argument(
         '--metadata_file',
         default='question_generation/metadata_partnet.json',
