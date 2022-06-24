@@ -126,11 +126,11 @@ class FolderCreator:
             pass
         elif root_dir.is_file():
             raise RuntimeError(
-                f"Output directory {self.structure.root} is a file!"
+                f"Output directory {root_dir} is a file!"
             )
         elif any(root_dir.iterdir()):
             raise RuntimeError(
-                f"Output directory {self.structure.root} is not empty!"
+                f"Output directory {root_dir} is not empty!"
             )
 
         self._folder_structure = FolderStructure(root_dir)
