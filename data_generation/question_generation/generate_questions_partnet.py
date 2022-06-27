@@ -9,52 +9,56 @@ parser = argparse.ArgumentParser()
 
 # Inputs
 parser.add_argument('--input_scene_files', default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/scenes_new',
-    help="JSON file containing ground-truth scene information for all images " +
-         "from render_images.py")
-parser.add_argument('--metadata_file', default='metadata_partnet.json',
-    help="JSON file containing metadata about functions")
-parser.add_argument('--synonyms_json', default='synonyms.json',
-    help="JSON file defining synonyms for parameter values")
-parser.add_argument('--template_dir', default='PARTNET_templates',
-    help="Directory containing JSON templates for questions")
+                    help="JSON file containing ground-truth scene information for all images " +
+                         "from render_images.py")
+parser.add_argument('--metadata_file', default='question_generation/metadata_partnet.json',
+                    help="JSON file containing metadata about functions")
+parser.add_argument('--synonyms_json', default='question_generation/synonyms.json',
+                    help="JSON file defining synonyms for parameter values")
+parser.add_argument('--template_dir', default='question_generation/PARTNET_templates',
+                    help="Directory containing JSON templates for questions")
 parser.add_argument('--output_dir', default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/questions',
-    help="Directory containing JSON templates for questions")
+                    help="Directory containing JSON templates for questions")
 # parser.add_argument('--new_scene_dir', default='../try_nscl/train/scenes_renew',
 #     help="Directory containing JSON templates for questions")
 
 # Output
 parser.add_argument('--output_questions_file',
-    default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/PARTNET_questions.json',
-    help="The output file to write containing generated questions")
+                    default='/home/evelyn/Desktop/partnet-reasoning/real_final_datasets/train/PARTNET_questions.json',
+                    help="The output file to write containing generated questions")
 
 # Control which and how many images to process
 parser.add_argument('--scene_start_idx', default=0, type=int,
-    help="The image at which to start generating questions; this allows " +
-         "question generation to be split across many workers")
+                    help="The image at which to start generating questions; this allows " +
+                         "question generation to be split across many workers")
 parser.add_argument('--num_scenes', default=0, type=int,
-    help="The number of images for which to generate questions. Setting to 0 " +
-         "generates questions for all scenes in the input file starting from " +
-         "--scene_start_idx")
+                    help="The number of images for which to generate questions. Setting to 0 " +
+                         "generates questions for all scenes in the input file starting from " +
+                         "--scene_start_idx")
 
 # Control the number of questions per image; we will attempt to generate
 # templates_per_image * instances_per_template questions per image.
 parser.add_argument('--templates_per_image', default=10, type=int,
-    help="The number of different templates that should be instantiated " +
-         "on each image")
+                    help="The number of different templates that should be instantiated " +
+                         "on each image")
 parser.add_argument('--instances_per_template', default=1, type=int,
-    help="The number of times each template should be instantiated on an image")
+                    help="The number of times each template should be instantiated on an image")
+
+#Control what kind type of templates to use
+parser.add_argument('--template_types', default='*',
+                   help='The types of templates to be used as a comma-separated list. * means use all')
 
 # Misc
 parser.add_argument('--reset_counts_every', default=6000, type=int,
-    help="How often to reset template and answer counts. Higher values will " +
-         "result in flatter distributions over templates and answers, but " +
-         "will result in longer runtimes.")
+                    help="How often to reset template and answer counts. Higher values will " +
+                         "result in flatter distributions over templates and answers, but " +
+                         "will result in longer runtimes.")
 parser.add_argument('--verbose', action='store_true',
-    help="Print more verbose output")
+                    help="Print more verbose output")
 parser.add_argument('--time_dfs', action='store_true',
-    help="Time each depth-first search; must be given with --verbose")
+                    help="Time each depth-first search; must be given with --verbose")
 parser.add_argument('--profile', action='store_true',
-    help="If given then run inside cProfile")
+                    help="If given then run inside cProfile")
 # args = parser.parse_args()
 
 
@@ -65,10 +69,10 @@ def precompute_filter_options(scene_struct, metadata, template):
 
   attr_keys = ['Object-Category', 'Part-Category', 'Part-Count', 'Color']
   common_parts = [
-      "leg", "back", "central support", "pedestal", "leg bar", "wheel", "door", "body"
-    ]
+    "leg", "back", "central support", "pedestal", "leg bar", "wheel", "door", "body"
+  ]
   categories = [obj['category'] for obj in scene_struct['objects']]
-  if ('Chair' in categories and not 'Bed' in categories) or ('Bed' in categories and not 'Chair' in categories): common_parts.remove("back"); 
+  if ('Chair' in categories and not 'Bed' in categories) or ('Bed' in categories and not 'Chair' in categories): common_parts.remove("back");
   if ('Chair' in categories and not 'Table' in categories) or ('Table' in categories and not 'Chair' in categories): common_parts.remove("central support"); common_parts.remove("pedestal")
   if ('Cart' in categories and not 'Refrigerator' in categories) or ('Refrigerator' in categories and not 'Cart' in categories): common_parts.remove("body")
   if ('Table' in categories and not 'Refrigerator' in categories) or ('Refrigerator' in categories and not 'Table' in categories): common_parts.remove("door")
@@ -79,7 +83,7 @@ def precompute_filter_options(scene_struct, metadata, template):
     mask = []
     for j in range(len(attr_keys)):
       mask.append((i // (2 ** j)) % 2)
-    if not (((mask[2] == 1 or mask[3] == 1) and mask[1] == 0)): 
+    if not (((mask[2] == 1 or mask[3] == 1) and mask[1] == 0)):
       masks.append(mask)
 
   for object_idx, obj in enumerate(scene_struct['objects']):
@@ -94,9 +98,9 @@ def precompute_filter_options(scene_struct, metadata, template):
       # keys = [tuple(obj[k] for k in attr_keys)]
       if ("perpendicular to the back wall" in template['text'][0] or "perpendicular to the left wall" in template['text'][0] or "parallel to the ground" in template['text'][0]) and part in ['seat', 'top']:
         continue
-      
+
       for mask in masks:
-        if (("many" in template['text'][0]) or ("number" in template['text'][0])) and mask[2] == 1: 
+        if (("many" in template['text'][0]) or ("number" in template['text'][0])) and mask[2] == 1:
           continue
         if part == "arm horizontal bar" and mask[2] == 1:
           continue
@@ -107,7 +111,7 @@ def precompute_filter_options(scene_struct, metadata, template):
         if mask == [0,0,0,0] and template['text'][0] == "How many <S>s with <CT> <CL> <P> are there?": print ("easy"); continue
         if mask[0] == 0 and mask[1] == 1 and (not part in common_parts):
           continue
-        for a,b in zip(key, mask):         
+        for a,b in zip(key, mask):
           if b == 1:
             masked_key.append(a)
           else:
@@ -115,7 +119,7 @@ def precompute_filter_options(scene_struct, metadata, template):
         masked_key = tuple(masked_key)
         masked_key = json.dumps(masked_key)
         if masked_key not in attribute_map:
-          attribute_map[masked_key] = set()          
+          attribute_map[masked_key] = set()
         attribute_map[masked_key].add(object_idx)
 
   scene_struct['_filter_options'] = attribute_map
@@ -129,7 +133,10 @@ def find_filter_options(object_idxs, scene_struct, metadata, template):
     precompute_filter_options(scene_struct, metadata, template)
 
   attribute_map = {}
-  object_idxs = set(object_idxs)
+  try:
+    object_idxs = set(object_idxs)
+  except TypeError as err:
+    raise err
   for k, vs in scene_struct['_filter_options'].items():
     attribute_map[k] = sorted(list(object_idxs & vs))
 
@@ -140,12 +147,12 @@ def add_empty_filter_options(attribute_map, metadata, num_to_add, template):
   # Add some filtering criterion that do NOT correspond to objects
 
   attr_keys = ['Object-Category', 'Part-Category', 'Part-Count', 'Color']
-  
+
   attr_vals = []
   for obj in ['Chair', 'Table', 'Refrigerator', 'Bed', 'Cart', None]:
-    if obj == None: 
+    if obj == None:
       parts = [
-      "leg", "back", "central support", "pedestal", "leg bar", "wheel", "door", "body"
+        "leg", "back", "central support", "pedestal", "leg bar", "wheel", "door", "body"
       ]
     else:
       parts = metadata['types']["Object-Part-Category"][obj]
@@ -157,11 +164,11 @@ def add_empty_filter_options(attribute_map, metadata, num_to_add, template):
       if len(a) and a[0] == obj:
         part = random.choice(parts)
         attr_vals.append([obj, part, None, {part: random.choice(metadata['types']['Color'])}])
-  
+
   for a in attribute_map:
-      a = json.loads(a)
-      if len(a) and a[1] != None:
-        attr_vals.append([a[0], a[1], a[2], {a[1]: random.choice(metadata['types']['Color'])}])
+    a = json.loads(a)
+    if len(a) and a[1] != None:
+      attr_vals.append([a[0], a[1], a[2], {a[1]: random.choice(metadata['types']['Color'])}])
 
   target_size = len(attribute_map) + num_to_add
   while len(attribute_map) < target_size:
@@ -172,7 +179,7 @@ def add_empty_filter_options(attribute_map, metadata, num_to_add, template):
       attribute_map[k] = []
 
 def find_relate_filter_options(object_idx, scene_struct, metadata, template,
-    unique=False, include_zero=False, trivial_frac=0.1):
+                               unique=False, include_zero=False, trivial_frac=0.1):
   options = {}
   if '_filter_options' not in scene_struct:
     precompute_filter_options(scene_struct, metadata)
@@ -249,7 +256,7 @@ def other_heuristic(text, param_vals):
 def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
                               synonyms, max_instances=None, verbose=False):
   # print (template)
-  param_name_to_type = {p['name']: p['type'] for p in template['params']} 
+  param_name_to_type = {p['name']: p['type'] for p in template['params']}
 
   initial_state = {
     'nodes': [node_shallow_copy(template['nodes'][0])],
@@ -269,8 +276,8 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
     outputs = qeng.answer_question(q, metadata, scene_struct, all_outputs=True)
 
     answer = outputs[-1]
-    
-    if answer == '__INVALID__': 
+
+    if answer == '__INVALID__':
       continue
 
     # Check to make sure constraints are satisfied for the current state
@@ -295,13 +302,13 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
               break
 
           if v1 is not None and v1 != "" and v4 is not None and v4 != "thing":
-            if v1 not in metadata['types']["Object-Part-Category"][v4]: 
+            if v1 not in metadata['types']["Object-Part-Category"][v4]:
               print (v1,v4)
               skip_state = True
               break
 
           if v2 is not None and v2 != "" and v3 is not None and v3 != "thing":
-            if v2 not in metadata['types']["Object-Part-Category"][v3]: 
+            if v2 not in metadata['types']["Object-Part-Category"][v3]:
               print (v2,v3)
               skip_state = True
               break
@@ -312,7 +319,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
         v1, v2 = state['vals'].get(s1), state['vals'].get(s2)
 
         if v2 is not None and v2 != "" and v1 is not None and v1 != "thing":
-          if v2 not in metadata['types']["Object-Part-Category"][v1]: 
+          if v2 not in metadata['types']["Object-Part-Category"][v1]:
             print ("cat2", v2,v1)
             skip_state = True
             break
@@ -338,6 +345,20 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
           if skip:
             if verbose:
               print('skipping due to NULL constraint')
+              print(constraint)
+              print(state['vals'])
+            skip_state = True
+            break
+      elif constraint['type'] == "NOT_NULL":
+        p = constraint['params'][0]
+        p_type = param_name_to_type[p]
+        v = state['vals'].get(p)
+        if v is not None:
+          skip = False
+          if p_type in ('Object-Category', 'Part-Category') and v == '': skip = True
+          if skip:
+            if verbose:
+              print('skipping due to NOT_NULL constraint')
               print(constraint)
               print(state['vals'])
             skip_state = True
@@ -373,6 +394,12 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
             print(outputs[j])
           skip_state = True
           break
+      elif constraint['type'] == 'OBJ_COUNT_GT':
+        p = constraint['params'][0]
+        if len(scene_struct['objects']) > p:
+          if verbose:
+            print('skipping due to OBJ_COUNT')
+          skip_state = True
       else:
         assert False, 'Unrecognized constraint type "%s"' % constraint['type']
 
@@ -425,9 +452,9 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
     next_node = node_shallow_copy(next_node)
 
     special_nodes = {
-        'filter_object_unique', 'filter_object_count', 'filter_object_exist', 'filter',
-        'relate_filter', 'relate_filter_unique', 'relate_filter_count',
-        'relate_filter_exist'
+      'filter_object_unique', 'filter_object_count', 'filter_object_exist', 'filter',
+      'relate_filter', 'relate_filter_unique', 'relate_filter_count',
+      'relate_filter_exist'
     }
     # print (next_node['type'])
 
@@ -438,7 +465,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
     #   print (unique_inputs)
     #   if len(unique_inputs) == 1:
     #     continue
-    
+
 
     if next_node['type'] in special_nodes:
 
@@ -447,7 +474,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
         include_zero = (next_node['type'] == 'relate_filter_count'
                         or next_node['type'] == 'relate_filter_exist')
         filter_options = find_relate_filter_options(answer, scene_struct, metadata, template,
-                            unique=unique, include_zero=False)
+                                                    unique=unique, include_zero=False)
       else:
         filter_options = find_filter_options(answer, scene_struct, metadata, template)
         if next_node['type'] == 'filter':
@@ -536,15 +563,15 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
 
     elif 'side_inputs' in next_node:
       # If the next node has template parameters, expand them out
-      
+
       q_type = next_node["type"]
 
       common_parts = [
-      "leg", "back", "central support", "pedestal", "leg bar", "wheel", "door", "body"
+        "leg", "back", "central support", "pedestal", "leg bar", "wheel", "door", "body"
       ]
       categories = [obj['category'] for obj in scene_struct['objects']]
 
-      if ('Chair' in categories and not 'Bed' in categories) or ('Bed' in categories and not 'Chair' in categories): common_parts.remove("back"); 
+      if ('Chair' in categories and not 'Bed' in categories) or ('Bed' in categories and not 'Chair' in categories): common_parts.remove("back");
       if ('Chair' in categories and not 'Table' in categories) or ('Table' in categories and not 'Chair' in categories): common_parts.remove("central support"); common_parts.remove("pedestal")
       if ('Cart' in categories and not 'Refrigerator' in categories) or ('Refrigerator' in categories and not 'Cart' in categories): common_parts.remove("body")
       if ('Table' in categories and not 'Refrigerator' in categories) or ('Refrigerator' in categories and not 'Table' in categories): common_parts.remove("door")
@@ -552,14 +579,14 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
 
 
       if ('part-color' in q_type) or ('part-count' in q_type) or ('part-category' in q_type) or ('part-geometry' in q_type) or ('change' in q_type):
-        
+
         param_name = next_node['side_inputs'][0]
-        param_type = param_name_to_type[param_name]        
-        
+        param_type = param_name_to_type[param_name]
+
         if 'part-color' in q_type:
           param_vals = list(scene_struct['objects'][answer]['part_color_occluded'].keys())
           param_vals2 = list(scene_struct['objects'][answer]['part_color_occluded'].values())
-          param_vals2 = [a[0] for a in param_vals2]          
+          param_vals2 = [a[0] for a in param_vals2]
         elif 'part-count' in q_type:
           param_vals = list(scene_struct['objects'][answer]['part_count_occluded'].keys())
           param_vals2 = list(scene_struct['objects'][answer]['part_count_occluded'].values())
@@ -567,7 +594,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
           param_vals = list(scene_struct['objects'][answer]['part_color_occluded'].values())
           param_vals = [a[0] for a in param_vals]
           param_vals2 = list(scene_struct['objects'][answer]['part_color_occluded'].keys())
-          
+
         elif 'part-geometry' in q_type:
           import numpy as np
           param_vals = []
@@ -579,7 +606,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
                 if np.max(np.array(scene_struct['objects'][answer]['line_geo'][k])) >= 10000 or np.min(np.array(scene_struct['objects'][answer]['line_geo'][k])) <= -10000: continue
                 param_vals.append(v)
                 param_vals2.append(k)
-  
+
               if 'plane_geo' in scene_struct['objects'][answer] and k in scene_struct['objects'][answer]['plane_geo'].keys():
                 if np.max(np.array(scene_struct['objects'][answer]['plane_geo'][k])) >= 10000 or np.min(np.array(scene_struct['objects'][answer]['plane_geo'][k])) <= -10000: continue
                 param_vals.append(v)
@@ -655,7 +682,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
               'input_map': input_map,
               'next_template_node': state['next_template_node'] + 1,
             })
-          if not keep2: 
+          if not keep2:
             continue
             # continue
       else:
@@ -713,8 +740,8 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
         val = str(val)
       # print (name, val)
 
-      if 'S' in name: 
-        if val == "": 
+      if 'S' in name:
+        if val == "":
           val = "thing"
           state['vals'][name] = val
         p = name.replace('S', 'P')
@@ -730,14 +757,14 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
         val = random.choice(synonyms[val])
 
       if 'P' in name:
-        if not val == '':      
+        if not val == '':
           ct = name.replace('P', 'CT')
           if ct in state['vals'].keys() and state['vals'][ct] != "" :
-            if int(state['vals'][ct][val]) > 1: 
+            if int(state['vals'][ct][val]) > 1:
               val += "s"
               text = text.replace("is the %s"%name, "are the %s"%name)
           else:
-            if not name + "s" in text: 
+            if not name + "s" in text:
               if val in ["arm", "leg", "leg bar", "wheel", "arm vertical bar", "arm horizontal bar", "back vertical bar", "back horizontal bar", "door", "drawer", "shelf"]:
                 val += "s"
                 text = text.replace("is the %s"%name, "are the %s"%name)
@@ -745,7 +772,7 @@ def instantiate_templates_dfs(scene_struct, template, metadata, answer_counts,
 
       text = text.replace(name, val)
       text = ' '.join(text.split())
-      
+
     # text = replace_optionals(text)
     # text = ' '.join(text.split())
     # text = other_heuristic(text, state['vals'])
@@ -798,10 +825,13 @@ def replace_optionals(s):
 
 
 def main(args):
+  if not os.path.isdir(args.output_dir):
+    os.makedirs(args.output_dir)
+
   with open(args.metadata_file, 'r') as f:
     metadata = json.load(f)
     dataset = metadata['dataset']
-  
+
   functions_by_name = {}
   for f in metadata['functions']:
     functions_by_name[f['name']] = f
@@ -811,7 +841,8 @@ def main(args):
   # Key is (filename, file_idx)
   num_loaded_templates = 0
   templates = {}
-  for fn in os.listdir(args.template_dir):
+  template_types_list = qeng.getTemplateTypes(args)
+  for fn in template_types_list:
     if not fn.endswith('.json'): continue
     with open(os.path.join(args.template_dir, fn), 'r') as f:
       base = os.path.splitext(fn)[0]
@@ -886,7 +917,7 @@ def main(args):
       try:
         if obj['line_geo'] == dict() and obj['plane_geo'] == dict(): scene_struct['objects'][i]['question_type'].remove("geometry")
       except:
-        obj['question_type'] = ['perception']    
+        obj['question_type'] = ['perception']
 
     print('starting image %s (%d / %d)'
           % (scene_fn, i + 1, len(all_scenes)))
@@ -902,7 +933,7 @@ def main(args):
 
     templates_items = list(templates.items())
     templates_items = sorted(templates_items,
-                        key=lambda x: template_counts[x[0][:2]])
+                             key=lambda x: template_counts[x[0][:2]])
     num_instantiated = 0
     for (fn, idx), template in templates_items:
       if ((not "physics" in scene_struct.keys()) or scene_struct["physics"] == False) and "physics" in fn: continue
@@ -912,13 +943,13 @@ def main(args):
       if args.time_dfs and args.verbose:
         tic = time.time()
       ts, qs, ans = instantiate_templates_dfs(
-                      scene_struct,
-                      template,
-                      metadata,
-                      template_answer_counts[(fn, idx)],
-                      synonyms,
-                      max_instances=args.instances_per_template,
-                      verbose=False)
+        scene_struct,
+        template,
+        metadata,
+        template_answer_counts[(fn, idx)],
+        synonyms,
+        max_instances=args.instances_per_template,
+        verbose=False)
       if args.time_dfs and args.verbose:
         toc = time.time()
         print('that took ', toc - tic)
@@ -961,26 +992,31 @@ def main(args):
         break
 
     with open(os.path.join(args.output_dir, question_fn), 'w') as f:
-        print('Writing output to %s' % question_fn)
-        json.dump({
-            # 'info': scene_info,
-            'questions': scene_questions,
-          }, f)
-
-  for q in questions:
-    for f in q['program']:
-      if 'side_inputs' in f:
-        f['value_inputs'] = f['side_inputs']
-        del f['side_inputs']
-      else:
-        f['value_inputs'] = []
-
-  with open(args.output_questions_file, 'w') as f:
-    print('Writing output to %s' % args.output_questions_file)
-    json.dump({
+      filepath = args.output_dir+question_fn
+      print('Writing output to %s' % filepath)
+      json.dump({
         # 'info': scene_info,
-        'questions': questions,
+        'questions': scene_questions,
       }, f)
+
+
+# Code below might not be necessary, why change the name of side_inputs to value_inputs
+# and write the file again in current working directory?
+
+#  for q in questions:
+#    for f in q['program']:
+#      if 'side_inputs' in f:
+#        f['value_inputs'] = f['side_inputs']
+#        del f['side_inputs']
+#      else:
+#        f['value_inputs'] = []
+
+#  with open(args.output_questions_file, 'w') as f:
+#    print('Writing output to %s' % args.output_questions_file)
+#    json.dump({
+#      # 'info': scene_info,
+#      'questions': questions,
+#    }, f)
 
 
 if __name__ == '__main__':

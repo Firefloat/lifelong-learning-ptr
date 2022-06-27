@@ -68,9 +68,9 @@ def add_mesh(obj_name, v, f, cur_render_dir, color=[0.216, 0.494, 0.722]):
     tmp_mtl = export_obj(tmp_obj, v, f, color=color)
 
     if obj_name+'.blend' in os.listdir(tmp_dir):
-        cmd = 'bash part_utils/add_part.sh %s %s %s' % (blend, tmp_obj, blend)
+        cmd = 'bash image_generation/part_utils/add_part.sh %s %s %s' % (blend, tmp_obj, blend)
     else:
-        cmd = 'bash part_utils/add_part.sh part_utils/model.blend %s %s' % (tmp_obj, blend)
+        cmd = 'bash image_generation/part_utils/add_part.sh image_generation/part_utils/model.blend %s %s' % (tmp_obj, blend)
     call(cmd, shell=True)
 
     cmd = 'rm -rf %s %s %s' % (tmp_obj, tmp_mtl, blend+"1")
@@ -90,9 +90,9 @@ def add_mesh2(obj_name, part, v, f, tmp_dir, color=[0.216, 0.494, 0.722]):
     tmp_mtl = export_obj(tmp_obj, v, f, color=color)
 
     if obj_name+'.blend' in os.listdir(tmp_dir):
-        cmd = 'bash part_utils/add_part.sh %s %s %s' % (blend, tmp_obj, blend)
+        cmd = 'bash image_generation/part_utils/add_part.sh %s %s %s' % (blend, tmp_obj, blend)
     else:
-        cmd = 'bash part_utils/add_part.sh part_utils/model.blend %s %s' % (tmp_obj, blend)
+        cmd = 'bash image_generation/part_utils/add_part.sh image_generation/part_utils/model.blend %s %s' % (tmp_obj, blend)
 
     call(cmd, shell=True)
 

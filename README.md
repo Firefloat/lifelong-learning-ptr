@@ -55,7 +55,7 @@ After successfull installation of `pip` you can install `pillow` which is requir
 > **NOTE**: you need to be located in the same directory as in the previous example where we installed pip!
 
 ```shell
-./python.exe -m pip install pillow
+./python.exe -m pip install pillow numpy pybullet
 ```
 
 ## Add blender to path
@@ -86,3 +86,41 @@ The last flag `--use_gpu 1` enables blender to run on your gpu. This only works 
 
 
 python generate_questions_partnet.py --input_scene_files ../output/scenes/ --output_dir out/ --output_questions_file out/PARTNET_questions.json
+
+# Install git-bash
+
+TODO
+
+add GIT directory to PATH environment variable
+
+TODO
+
+# Data stream usage
+
+TODO
+
+example for windows:
+```shell
+python data_stream_wrapper_partnet.py --data_dir D:/Datasets/data_v0 --mobility_dir D:/Datasets/dataset --use_gpu 1 --instances_per_template 15
+```
+
+example for Linux:
+```shell
+python data_stream_wrapper_partnet.py 
+--data_dir B:/PartNetData/partnet \
+--mobility_dir B:/PartNetData/mobility \
+--use_gpu 1 \
+--output_image_dir  data_generation/single_item/output/images \
+--output_scene_dir  data_generation/single_item/output/scenes \
+--output_depth_dir  data_generation/single_item/output/depths \
+--output_scene_file  data_generation/single_item/output/ptr_scenes.json \
+--output_blend_dir  data_generation/single_item/output/blendfiles \
+--num_images 1 \
+--min_objects 1 \
+--max_objects 1 \
+--instances_per_template 15 \
+--template_types single_object \
+--input_scene_files  data_generation/single_item/output/scenes \
+--output_dir  data_generation/single_item/output \
+--output_questions_file questions_file
+```

@@ -579,7 +579,6 @@ def what_question_handler(scene_struct, inputs, side_inputs):
   cat = scene_struct['objects'][0]['category']
   return cat
 
-
 execute_handlers = {
   'scene': scene_handler,
   #filter
@@ -648,7 +647,7 @@ execute_handlers = {
   'query_positional-analogy-exist': query_position_analogy_handler('query_positional-analogy-exist'),
   'perpendicular': geometry_handler('perpendicular'),
   'parallel': geometry_handler('parallel'),
-  'what_question': what_question_handler,
+  'what_question': what_question_handler
 }
 
 
@@ -766,4 +765,13 @@ def is_degenerate(question, metadata, scene_struct, answer=None, verbose=False):
         return True
 
   return False
+
+def getTemplateTypes(args):
+  if args.template_types == '*':
+    template_types_list = os.listdir(args.template_dir)
+  else:
+    template_types_list = args.template_types.replace(' ', '')
+    template_types_list = args.template_types.split(',')
+    template_types_list = [s + '.json' for s in template_types_list]
+  return template_types_list
 
