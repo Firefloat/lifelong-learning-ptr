@@ -19,6 +19,7 @@ IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = pathlib.Path(__file__).parent
 TEMPLATE_ORDER = collections.OrderedDict(
     {
+        'image_only': {},
         'what_question': {'min_objects': 1, 'max_objects': 1},
         'single_object': {'min_objects': 1, 'max_objects': 1},
         'zero_hop': {},
@@ -352,13 +353,18 @@ def main_loop(args) -> None:
             num_images=num_images,
         )
 
-        print("Generating questions")
-        generate_questions(
-            args=args,
-            folder_structure=creator.structure,
-            instances_per_template=args.instances_per_template,
-            template_types=template_type,
-        )
+        if template_type == 'image_only':
+            print(
+                f"No question generation for template type '{template_type}'"
+            )
+        else:
+            print("Generating questions")
+            generate_questions(
+                args=args,
+                folder_structure=creator.structure,
+                instances_per_template=args.instances_per_template,
+                template_types=template_type,
+            )
 
 
 def main():
