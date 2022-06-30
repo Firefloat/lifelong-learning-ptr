@@ -19,7 +19,7 @@ IMAGE_OUTPUT_DIR = IMAGE_DIR.parent / 'output'
 ROOT_DIR = pathlib.Path(__file__).parent
 TEMPLATE_ORDER = collections.OrderedDict(
     {
-        'image_only': {},
+        'image_only': {'min_objects': 1, 'max_objects': 1},
         'what_question': {'min_objects': 1, 'max_objects': 1},
         'single_object': {'min_objects': 1, 'max_objects': 1},
         'zero_hop': {},
