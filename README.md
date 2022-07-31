@@ -89,15 +89,9 @@ python generate_questions_partnet.py --input_scene_files ../output/scenes/ --out
 
 # Install git-bash
 
-TODO
-
-add GIT directory to PATH environment variable
-
-TODO
+[Install Git](https://github.com/git-guides/install-git) and add Git directory to PATH environment variable
 
 # Data stream usage
-
-TODO
 
 example for windows:
 ```shell
